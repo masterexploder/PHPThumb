@@ -1,23 +1,85 @@
 <?php
+/**
+ * PhpThumb Library Definition File
+ * 
+ * This file contains the definitions for the PhpThumbFactory and the PhpThumb classes.
+ * It also includes the other required base class files.
+ * 
+ * If you've got some auto-loading magic going on elsewhere in your code, feel free to
+ * remove the include_once statements at the beginning of this file... just make sure that
+ * these files get included one way or another in your code.
+ * 
+ * @author Ian Selby <ian@gen-x-design.com>
+ * @copyright Copyright 2008 Gen X Design
+ * @version 3.0
+ * @package PhpThumb
+ * @filesource
+ */
+
 include_once('ThumbBase.inc.php');
 
+/**
+ * PhpThumbFactory Object
+ * 
+ * This class is responsible for making sure everything is set up and initialized properly,
+ * and returning the appropriate thumbnail class instance.  It is the only recommended way 
+ * of using this library, and if you try and circumvent it, the sky will fall on your head :)
+ * 
+ * Basic use is easy enough.  First, make sure all the settings meet your needs and environment...
+ * these are the static variables defined at the beginning of the class.
+ * 
+ * Once that's all set, usage is pretty easy.  You can simply do something like:
+ * <code>$thumb = PhpThumbFactory::create('/path/to/file.png');</code>
+ * 
+ * Refer to the documentation for the create function for more information
+ * 
+ * @package PhpThumb
+ * @subpackage Core
+ */
 class PhpThumbFactory
 {
+	/**
+	 * Which implemenation of the class should be used by default
+	 * 
+	 * Currently, valid options are:
+	 *  - imagick
+	 *  - gd
+	 *  
+	 * These are defined in the implementation map variable, inside the create function
+	 * 
+	 * @var string
+	 */
 	public static $default_implemenation = 'imagick';
+	/**
+	 * Where the plugins can be loaded from
+	 * 
+	 * Note, it's important that this path is properly defined.  It is very likely that you'll 
+	 * have to change this, as the assumption here is based on a relative path.
+	 * 
+	 * @var string
+	 */
 	public static $plugin_path = 'thumb_plugins/';
 	
 	public static function create($filename = '')
 	{
+		$implementation_map = array
+		(
+			'imagick' => 'ImagickThumb',
+			'gd' => 'GdThumb'
+		);
+		
 		$pt = PhpThumb::getInstance();
 		$pt->loadPlugins(self::$plugin_path);
 		
 		if($pt->isValidImplementation(self::$default_implemenation))
 		{
-			// return new ImagickThumb
+			$imp = $implementation_map[self::$default_implemenation];
+			return new $imp($filename);
 		}
 		else if ($pt->isValidImplementation('gd'))
 		{
-			// return new GdThumb
+			$imp = $implementation_map['gd'];
+			return new $imp($filename);
 		}
 		else
 		{
