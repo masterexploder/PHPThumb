@@ -99,6 +99,27 @@ class ThumbBase
 		
 		throw new Exception ('Call to undefined method/class function: ' . $method);
 	}
+
+    /**
+     * Returns $imported.
+     * @see ThumbBase::$imported
+     * @return array
+     */
+    public function getImported()
+    {
+        return $this->imported;
+    }
+    
+    /**
+     * Returns $imported_functions.
+     * @see ThumbBase::$imported_functions
+     * @return array
+     */
+    public function getImportedFunctions()
+    {
+        return $this->imported_functions;
+    }
+
 }
 
 ?>
