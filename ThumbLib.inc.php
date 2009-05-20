@@ -16,7 +16,7 @@
  * @filesource
  */
 
-include_once('ThumbBase.inc.php');
+require_once 'ThumbBase.inc.php';
 
 /**
  * PhpThumbFactory Object
@@ -49,7 +49,7 @@ class PhpThumbFactory
 	 * 
 	 * @var string
 	 */
-	public static $default_implemenation = 'gd';
+	public static $defaultImplemenation = 'gd';
 	/**
 	 * Where the plugins can be loaded from
 	 * 
@@ -58,7 +58,7 @@ class PhpThumbFactory
 	 * 
 	 * @var string
 	 */
-	public static $plugin_path = 'thumb_plugins/';
+	public static $pluginPath = 'thumb_plugins/';
 	
 	/**
 	 * Factory Function
@@ -76,24 +76,24 @@ class PhpThumbFactory
 	 * @uses PhpThumb
 	 * @param string $filename The path and file to load [optional]
 	 */
-	public static function create($filename = '')
+	public static function create ($filename = '')
 	{
 		// map our implementation to their class names
 		$implementation_map = array
 		(
-			'imagick' => 'ImagickThumb',
-			'gd' => 'GdThumb'
+			'imagick'	=> 'ImagickThumb',
+			'gd' 		=> 'GdThumb'
 		);
 		
 		// grab an instance of PhpThumb
 		$pt = PhpThumb::getInstance();
 		// load the plugins
-		$pt->loadPlugins(self::$plugin_path);
+		$pt->loadPlugins(self::$pluginPath);
 		
 		// attempt to load the default implementation
-		if($pt->isValidImplementation(self::$default_implemenation))
+		if ($pt->isValidImplementation(self::$defaultImplemenation))
 		{
-			$imp = $implementation_map[self::$default_implemenation];
+			$imp = $implementation_map[self::$defaultImplemenation];
 			return new $imp($filename);
 		}
 		// load the gd implementation if default failed
@@ -164,7 +164,7 @@ class PhpThumb
 	 * 
 	 * @return PhpThumb
 	 */
-	public static function getInstance()
+	public static function getInstance ()
 	{
 		if(!(self::$_instance instanceof self))
 		{
@@ -180,7 +180,7 @@ class PhpThumb
 	 * Initializes all the variables, and does some preliminary validation / checking of stuff
 	 * 
 	 */
-	private function __construct()
+	private function __construct ()
 	{
 		$this->_registry		= array();
 		$this->_implementations	= array('gd' => false, 'imagick' => false);
@@ -197,7 +197,7 @@ class PhpThumb
 	 * was comfortable with (and would probably fail 99% of the time anyway)
 	 * 
 	 */
-	private function getImplementations()
+	private function getImplementations ()
 	{
 		foreach($this->_implementations as $extension => $loaded)
 		{
@@ -223,18 +223,18 @@ class PhpThumb
 	 * @return bool 
 	 * @param string $implementation
 	 */
-	public function isValidImplementation($implementation)
+	public function isValidImplementation ($implementation)
 	{
-		if($implementation == 'n/a')
+		if ($implementation == 'n/a')
 		{
 			return true;
 		}
 		
-		if($implementation == 'all')
+		if ($implementation == 'all')
 		{
-			foreach($this->_implementations as $imp => $value)
+			foreach ($this->_implementations as $imp => $value)
 			{
-				if($value == false)
+				if ($value == false)
 				{
 					return false;
 				}
@@ -243,7 +243,7 @@ class PhpThumb
 			return true;
 		}
 		
-		if(array_key_exists($implementation, $this->_implementations))
+		if (array_key_exists($implementation, $this->_implementations))
 		{
 			return $this->_implementations[$implementation];
 		}
@@ -269,11 +269,11 @@ class PhpThumb
 	 * @param string $plugin_name
 	 * @param string $implementation
 	 */
-	public function registerPlugin($plugin_name, $implementation)
+	public function registerPlugin ($pluginName, $implementation)
 	{
-		if(!array_key_exists($plugin_name, $this->_registry) && $this->isValidImplementation($implementation))
+		if (!array_key_exists($pluginName, $this->_registry) && $this->isValidImplementation($implementation))
 		{
-			$this->_registry[$plugin_name] = array('loaded' => false, 'implemenation' => $implementation);
+			$this->_registry[$pluginName] = array('loaded' => false, 'implemenation' => $implementation);
 			return true;
 		}
 		
@@ -281,22 +281,22 @@ class PhpThumb
 	}
 	
 	/**
-	 * Loads all the plugins in $plugin_path
+	 * Loads all the plugins in $pluginPath
 	 * 
-	 * All this function does is include all files inside the $plugin_path directory.  The plugins themselves 
+	 * All this function does is include all files inside the $pluginPath directory.  The plugins themselves 
 	 * will not be added to the registry unless you've properly added the code to do so inside your plugin file.
 	 * 
-	 * @param string $plugin_path
+	 * @param string $pluginPath
 	 */
-	public function loadPlugins($plugin_path)
+	public function loadPlugins ($pluginPath)
 	{
 		// strip the trailing slash if present
-		if(substr($plugin_path, strlen($plugin_path) - 1, 1) == '/')
+		if (substr($pluginPath, strlen($pluginPath) - 1, 1) == '/')
 		{
-			$plugin_path = substr($plugin_path, 0, strlen($plugin_path) - 1);
+			$pluginPath = substr($pluginPath, 0, strlen($pluginPath) - 1);
 		}
 		
-		if($handle = opendir($plugin_path))
+		if ($handle = opendir($pluginPath))
 		{
 			while (false !== ($file = readdir($handle)))
 			{
@@ -305,7 +305,7 @@ class PhpThumb
 					continue;
 				}
 				
-				include_once($plugin_path . '/' . $file);
+				include_once($pluginPath . '/' . $file);
 			}
 		}
 	}

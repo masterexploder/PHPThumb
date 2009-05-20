@@ -38,17 +38,17 @@ class ThumbBase
 	 * 
 	 * @var array
 	 */
-	private $imported_functions;
+	private $importedFunctions;
 	
 	/**
 	 * Class constructor
 	 * 
 	 * @return ThumbBase
 	 */
-	public function __construct()
+	public function __construct ()
 	{
 		$this->imported				= array();
-		$this->imported_functions	= array();
+		$this->importedFunctions	= array();
 	}
 	
 	/**
@@ -59,22 +59,22 @@ class ThumbBase
 	 * 
 	 * @param string $object The name of the object to import / "load"
 	 */
-	protected function imports($object)
+	protected function imports ($object)
 	{
 		// the new object to import
-		$new_import 		= new $object();
+		$newImport 			= new $object();
 		// the name of the new object (class name)
-		$import_name		= get_class($new_import);
+		$importName			= get_class($newImport);
 		// the new functions to import
-		$import_functions 	= get_class_methods($new_import);
+		$importFunctions 	= get_class_methods($newImport);
 		
 		// add the object to the registry
-		array_push($this->imported, array($import_name, $new_import));
+		array_push($this->imported, array($importName, $newImport));
 		
 		// add teh methods to the registry
-		foreach($import_functions as $key => $function_name)
+		foreach ($importFunctions as $key => $functionName)
 		{
-			$this->imported_functions[$function_name] = &$new_import;
+			$this->importedFunctions[$functionName] = &$newImport;
 		}
 	}
 	
@@ -89,12 +89,12 @@ class ThumbBase
 	 * @param string $method
 	 * @param array $args
 	 */
-	public function __call($method, $args)
+	public function __call ($method, $args)
 	{
-		if(array_key_exists($method, $this->imported_functions))
+		if( array_key_exists($method, $this->importedFunctions))
 		{
 			$args[] = $this;
-			return call_user_func_array(array($this->imported_functions[$method], $method), $args);
+			return call_user_func_array(array($this->importedFunctions[$method], $method), $args);
 		}
 		
 		throw new Exception ('Call to undefined method/class function: ' . $method);
@@ -105,19 +105,19 @@ class ThumbBase
      * @see ThumbBase::$imported
      * @return array
      */
-    public function getImported()
+    public function getImported ()
     {
         return $this->imported;
     }
     
     /**
-     * Returns $imported_functions.
-     * @see ThumbBase::$imported_functions
+     * Returns $importedFunctions.
+     * @see ThumbBase::$importedFunctions
      * @return array
      */
-    public function getImportedFunctions()
+    public function getImportedFunctions ()
     {
-        return $this->imported_functions;
+        return $this->importedFunctions;
     }
 
 }
