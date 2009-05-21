@@ -194,21 +194,7 @@ class GdThumb extends ThumbBase
 			$this->workingImage = imagecreate($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
 		}
 		
-		// preserve alpha transparency - originally suggested by Aimi :)
-		if ($this->format == 'PNG')
-		{
-			imagealphablending($this->workingImage, false);
-			$colorTransparent = imagecolorallocatealpha($this->workingImage, 255, 255, 255, 0);
-			imagefill($this->workingImage, 0, 0, $colorTransparent);
-			imagesavealpha($this->workingImage, true);
-		}
-		// preserve transparency in GIFs... this is usually pretty rough tho
-		if ($this->format == 'GIF')
-		{
-			$colorTransparent = imagecolorallocate($this->workingImage, 0, 0, 0);
-			imagecolortransparent($this->workingImage, $colorTransparent);
-			imagetruecolortopalette($this->workingImage, true, 256);
-		}
+		$this->preserveAlpha();		
 		
 		// and create the newly sized image
 		imagecopyresampled
@@ -226,6 +212,153 @@ class GdThumb extends ThumbBase
 		);
 
 		// update all the variables and resources to be correct
+		$this->oldImage 					= $this->workingImage;
+		$this->newImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $this->newDimensions['newWidth'];
+		$this->currentDimensions['height'] 	= $this->newDimensions['newHeight'];
+	}
+	
+	/**
+	 * Adaptively Resizes the Image
+	 * 
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the 
+	 * remaining overflow (from the center) to get the image to be the size specified
+	 * 
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 */
+	public function adaptiveResize ($width, $height)
+	{
+		// make sure our arguments are valid
+		if (!is_numeric($width) || $width  == 0)
+		{
+			throw new InvalidArgumentException('$width must be numeric and greater than zero');
+		}
+		
+		if (!is_numeric($height) || $height == 0)
+		{
+			throw new InvalidArgumentException('$height must be numeric and greater than zero');
+		}
+		
+		// make sure we're not exceeding our image size if we're not supposed to
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+		
+		$this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
+		
+		// resize the image to be close to our desired dimensions
+		$this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+		
+		// reset the max dimensions...
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+		
+		// create the working image
+		if (function_exists('imagecreatetruecolor'))
+		{
+			$this->workingImage = imagecreatetruecolor($this->maxWidth, $this->maxHeight);
+		}
+		else
+		{
+			$this->workingImage = imagecreate($this->maxWidth, $this->maxHeight);
+		}
+		
+		$this->preserveAlpha();
+		
+		$cropWidth	= $this->maxWidth;
+		$cropHeight	= $this->maxHeight;
+		$cropX 		= 0;
+		$cropY 		= 0;
+		
+		// now, figure out how to crop the rest of the image...
+		if ($this->currentDimensions['width'] > $this->maxWidth)
+		{
+			$cropX = intval(($this->currentDimensions['width'] - $this->maxWidth) / 2);
+		}
+		elseif ($this->currentDimensions['height'] > $this->maxHeight)
+		{
+			$cropY = intval(($this->currentDimensions['height'] - $this->maxHeight) / 2);
+		}
+		
+		imagecopyresampled
+		(
+            $this->workingImage,
+            $this->oldImage,
+            0,
+            0,
+            $cropX,
+            $cropY,
+            $cropWidth,
+            $cropHeight,
+            $cropWidth,
+            $cropHeight
+		);
+		
+		// update all the variables and resources to be correct
+		$this->oldImage 					= $this->workingImage;
+		$this->newImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $this->maxWidth;
+		$this->currentDimensions['height'] 	= $this->maxHeight;
+	}
+	
+	/**
+	 * Resizes an image by a given percent uniformly
+	 * 
+	 * Percentage should be whole number representation (i.e. 1-100)
+	 * 
+	 * @param int $percent
+	 */
+	public function resizePercent ($percent = 0)
+	{
+		if (!is_numeric($percent))
+		{
+			throw new InvalidArgumentException ('$percent must be numeric');
+		}
+		
+		$this->percent = intval($percent);
+		
+		$this->calcImageSizePercent($this->currentDimensions['width'], $this->currentDimensions['height']);
+		
+		if (function_exists('imagecreatetruecolor'))
+		{
+			$this->workingImage = imagecreatetruecolor($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+		}
+		else
+		{
+			$this->workingImage = imagecreate($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+		}
+		
+		$this->preserveAlpha();
+		
+		ImageCopyResampled(
+			$this->workingImage,
+			$this->oldImage,
+			0,
+			0,
+			0,
+			0,
+			$this->newDimensions['newWidth'],
+			$this->newDimensions['newHeight'],
+			$this->currentDimensions['width'],
+			$this->currentDimensions['height']
+		);
+
 		$this->oldImage 					= $this->workingImage;
 		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $this->newDimensions['newWidth'];
@@ -349,7 +482,11 @@ class GdThumb extends ThumbBase
 			(
 				'resizeUp'				=> false,
 				'jpegQuality'			=> 100,
-				'correctPermissions'	=> true
+				'correctPermissions'	=> true,
+				'preserveAlpha'			=> true,
+				'alphaMaskColor'		=> array (255, 255, 255),
+				'preserveTransparency'	=> true,
+				'transparencyMaskColor'	=> array (0, 0, 0)
 			);
 		}
 		// otherwise, let's use what we've got already
@@ -360,6 +497,122 @@ class GdThumb extends ThumbBase
 		
 		$this->options = array_merge($defaultOptions, $options);
 	}
+	
+	/**
+	 * Returns $currentDimensions.
+	 *
+	 * @see GdThumb::$currentDimensions
+	 */
+	public function getCurrentDimensions ()
+	{
+		return $this->currentDimensions;
+	}
+	
+	/**
+	 * Sets $currentDimensions.
+	 *
+	 * @param object $currentDimensions
+	 * @see GdThumb::$currentDimensions
+	 */
+	public function setCurrentDimensions ($currentDimensions)
+	{
+		$this->currentDimensions = $currentDimensions;
+	}
+	
+	/**
+	 * Returns $maxHeight.
+	 *
+	 * @see GdThumb::$maxHeight
+	 */
+	public function getMaxHeight ()
+	{
+		return $this->maxHeight;
+	}
+	
+	/**
+	 * Sets $maxHeight.
+	 *
+	 * @param object $maxHeight
+	 * @see GdThumb::$maxHeight
+	 */
+	public function setMaxHeight ($maxHeight)
+	{
+		$this->maxHeight = $maxHeight;
+	}
+	
+	/**
+	 * Returns $maxWidth.
+	 *
+	 * @see GdThumb::$maxWidth
+	 */
+	public function getMaxWidth ()
+	{
+		return $this->maxWidth;
+	}
+	
+	/**
+	 * Sets $maxWidth.
+	 *
+	 * @param object $maxWidth
+	 * @see GdThumb::$maxWidth
+	 */
+	public function setMaxWidth ($maxWidth)
+	{
+		$this->maxWidth = $maxWidth;
+	}
+	
+	/**
+	 * Returns $newDimensions.
+	 *
+	 * @see GdThumb::$newDimensions
+	 */
+	public function getNewDimensions ()
+	{
+		return $this->newDimensions;
+	}
+	
+	/**
+	 * Sets $newDimensions.
+	 *
+	 * @param object $newDimensions
+	 * @see GdThumb::$newDimensions
+	 */
+	public function setNewDimensions ($newDimensions)
+	{
+		$this->newDimensions = $newDimensions;
+	}
+	
+	/**
+	 * Returns $options.
+	 *
+	 * @see GdThumb::$options
+	 */
+	public function getOptions ()
+	{
+		return $this->options;
+	}
+	
+	/**
+	 * Returns $percent.
+	 *
+	 * @see GdThumb::$percent
+	 */
+	public function getPercent ()
+	{
+		return $this->percent;
+	}
+	
+	/**
+	 * Sets $percent.
+	 *
+	 * @param object $percent
+	 * @see GdThumb::$percent
+	 */
+	public function setPercent ($percent)
+	{
+		$this->percent = $percent;
+	} 
+	
 	
 	#################################
 	# ----- UTILITY FUNCTIONS ----- #
@@ -462,6 +715,62 @@ class GdThumb extends ThumbBase
 	}
 	
 	/**
+	 * Calculates new image dimensions, not allowing the width and height to be less than either the max width or height 
+	 * 
+	 * @param int $width
+	 * @param int $height
+	 */
+	protected function calcImageSizeStrict ($width, $height)
+	{
+		// first, we need to determine what the longest resize dimension is..
+		if ($this->maxWidth >= $this->maxHeight)
+		{
+			// and determine the longest original dimension
+			if ($width > $height)
+			{
+				$newDimensions = $this->calcHeight($width, $height);
+				
+				if ($newDimensions['newWidth'] < $this->maxWidth)
+				{
+					$newDimensions = $this->calcWidth($width, $height);
+				}
+			}
+			elseif ($height >= $width)
+			{
+				$newDimensions = $this->calcWidth($width, $height);
+				
+				if ($newDimensions['newHeight'] < $this->maxHeight)
+				{
+					$newDimensions = $this->calcHeight($width, $height);
+				}
+			}
+		}
+		elseif ($this->maxHeight > $this->maxWidth)
+		{
+			if ($width >= $height)
+			{
+				$newDimensions = $this->calcWidth($width, $height);
+				
+				if ($newDimensions['newHeight'] < $this->maxHeight)
+				{
+					$newDimensions = $this->calcHeight($width, $height);
+				}
+			}
+			elseif ($height > $width)
+			{
+				$newDimensions = $this->calcHeight($width, $height);
+				
+				if ($newDimensions['newWidth'] < $this->maxWidth)
+				{
+					$newDimensions = $this->calcWidth($width, $height);
+				}
+			}
+		}
+		
+		$this->newDimensions = $newDimensions;
+	}
+	
+	/**
 	 * Calculates new dimensions based on $this->percent and the provided dimensions
 	 * 
 	 * @param int $width
@@ -534,6 +843,50 @@ class GdThumb extends ThumbBase
 		if (!$isCompatible)
 		{
 			$this->triggerError('Your GD installation does not support ' . $this->format . ' image types');	
+		}
+	}
+	
+	/**
+	 * Preserves the alpha or transparency for PNG and GIF files
+	 * 
+	 * Alpha / transparency will not be preserved if the appropriate options are set to false.
+	 * Also, the GIF transparency is pretty skunky (the results aren't awesome), but it works like a 
+	 * champ... that's the nature of GIFs tho, so no huge surprise.
+	 * 
+	 * This functionality was originally suggested by commenter Aimi (no links / site provided) - Thanks! :)
+	 *   
+	 */
+	protected function preserveAlpha ()
+	{
+		if ($this->format == 'PNG' && $this->options['preserveAlpha'] === true)
+		{
+			imagealphablending($this->workingImage, false);
+			
+			$colorTransparent = imagecolorallocatealpha
+			(
+				$this->workingImage, 
+				$this->options['alphaMaskColor'][0], 
+				$this->options['alphaMaskColor'][1], 
+				$this->options['alphaMaskColor'][2], 
+				0
+			);
+			
+			imagefill($this->workingImage, 0, 0, $colorTransparent);
+			imagesavealpha($this->workingImage, true);
+		}
+		// preserve transparency in GIFs... this is usually pretty rough tho
+		if ($this->format == 'GIF' && $this->options['preserveTransparency'] === true)
+		{
+			$colorTransparent = imagecolorallocate
+			(
+				$this->workingImage, 
+				$this->options['transparencyMaskColor'][0], 
+				$this->options['transparencyMaskColor'][1], 
+				$this->options['transparencyMaskColor'][2] 
+			);
+			
+			imagecolortransparent($this->workingImage, $colorTransparent);
+			imagetruecolortopalette($this->workingImage, true, 256);
 		}
 	}
 }

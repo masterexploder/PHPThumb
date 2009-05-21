@@ -82,6 +82,14 @@ class ThumbBase
 		$this->fileExistsAndReadable();
 	}
 	
+	public function importPlugins ($registry)
+	{
+		foreach ($registry as $plugin => $meta)
+		{
+			$this->imports($plugin);
+		}
+	}
+	
 	/**
 	 * Imports a plugin
 	 * 
@@ -182,5 +190,90 @@ class ThumbBase
     {
         return $this->importedFunctions;
     }
+	
+	/**
+	 * Returns $errorMessage.
+	 *
+	 * @see ThumbBase::$errorMessage
+	 */
+	public function getErrorMessage ()
+	{
+		return $this->errorMessage;
+	}
+	
+	/**
+	 * Sets $errorMessage.
+	 *
+	 * @param object $errorMessage
+	 * @see ThumbBase::$errorMessage
+	 */
+	public function setErrorMessage ($errorMessage)
+	{
+		$this->errorMessage = $errorMessage;
+	}
+	
+	/**
+	 * Returns $fileName.
+	 *
+	 * @see ThumbBase::$fileName
+	 */
+	public function getFileName ()
+	{
+		return $this->fileName;
+	}
+	
+	/**
+	 * Sets $fileName.
+	 *
+	 * @param object $fileName
+	 * @see ThumbBase::$fileName
+	 */
+	public function setFileName ($fileName)
+	{
+		$this->fileName = $fileName;
+	}
+	
+	/**
+	 * Returns $format.
+	 *
+	 * @see ThumbBase::$format
+	 */
+	public function getFormat ()
+	{
+		return $this->format;
+	}
+	
+	/**
+	 * Sets $format.
+	 *
+	 * @param object $format
+	 * @see ThumbBase::$format
+	 */
+	public function setFormat ($format)
+	{
+		$this->format = $format;
+	}
+	
+	/**
+	 * Returns $hasError.
+	 *
+	 * @see ThumbBase::$hasError
+	 */
+	public function getHasError ()
+	{
+		return $this->hasError;
+	}
+	
+	/**
+	 * Sets $hasError.
+	 *
+	 * @param object $hasError
+	 * @see ThumbBase::$hasError
+	 */
+	public function setHasError ($hasError)
+	{
+		$this->hasError = $hasError;
+	} 
+	
 
 }

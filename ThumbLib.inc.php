@@ -83,7 +83,7 @@ class PhpThumbFactory
 	 * @uses PhpThumb
 	 * @param string $filename The path and file to load [optional]
 	 */
-	public static function create ($filename = '')
+	public static function create ($filename = null, $options = array())
 	{
 		// map our implementation to their class names
 		$implementationMap = array
@@ -97,23 +97,31 @@ class PhpThumbFactory
 		// load the plugins
 		$pt->loadPlugins(self::$pluginPath);
 		
+		$toReturn = null;
+		$implementation = self::$defaultImplemenation;
+		
 		// attempt to load the default implementation
 		if ($pt->isValidImplementation(self::$defaultImplemenation))
 		{
 			$imp = $implementationMap[self::$defaultImplemenation];
-			return new $imp($filename);
+			$toReturn = new $imp($filename, $options);
 		}
 		// load the gd implementation if default failed
 		else if ($pt->isValidImplementation('gd'))
 		{
 			$imp = $implementationMap['gd'];
-			return new $imp($filename);
+			$implementation = 'gd';
+			$toReturn = new $imp($filename, $options);
 		}
 		// throw an exception if we can't load
 		else
 		{
 			throw new Exception('You must have either the GD or iMagick extension loaded to use this library');
 		}
+		
+		$registry = $pt->getPluginRegistry($implementation);
+		$toReturn->importPlugins($registry);
+		return $toReturn;
 	}
 }
 
@@ -142,7 +150,7 @@ class PhpThumb
 	 * 
 	 * @var object PhpThumb
 	 */
-	static $_instance;
+	protected static $_instance;
 	/**
 	 * The plugin registry
 	 * 
@@ -273,14 +281,14 @@ class PhpThumb
 	 *  - implementation - what implementation this plugin is valid for
 	 * 
 	 * @return bool
-	 * @param string $plugin_name
+	 * @param string $pluginName
 	 * @param string $implementation
 	 */
 	public function registerPlugin ($pluginName, $implementation)
 	{
 		if (!array_key_exists($pluginName, $this->_registry) && $this->isValidImplementation($implementation))
 		{
-			$this->_registry[$pluginName] = array('loaded' => false, 'implemenation' => $implementation);
+			$this->_registry[$pluginName] = array('loaded' => false, 'implementation' => $implementation);
 			return true;
 		}
 		
@@ -315,5 +323,20 @@ class PhpThumb
 				include_once($pluginPath . '/' . $file);
 			}
 		}
+	}
+	
+	public function getPluginRegistry ($implementation)
+	{
+		$returnArray = array();
+		
+		foreach ($this->_registry as $plugin => $meta)
+		{
+			if ($meta['implementation'] == 'n/a' || $meta['implementation'] == $implementation)
+			{
+				$returnArray[$plugin] = $meta;
+			}
+		}
+		
+		return $returnArray;
 	}
 }
