@@ -194,6 +194,22 @@ class GdThumb extends ThumbBase
 			$this->workingImage = imagecreate($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
 		}
 		
+		// preserve alpha transparency - originally suggested by Aimi :)
+		if ($this->format == 'PNG')
+		{
+			imagealphablending($this->workingImage, false);
+			$colorTransparent = imagecolorallocatealpha($this->workingImage, 255, 255, 255, 0);
+			imagefill($this->workingImage, 0, 0, $colorTransparent);
+			imagesavealpha($this->workingImage, true);
+		}
+		// preserve transparency in GIFs... this is usually pretty rough tho
+		if ($this->format == 'GIF')
+		{
+			$colorTransparent = imagecolorallocate($this->workingImage, 0, 0, 0);
+			imagecolortransparent($this->workingImage, $colorTransparent);
+			imagetruecolortopalette($this->workingImage, true, 256);
+		}
+		
 		// and create the newly sized image
 		imagecopyresampled
 		(
