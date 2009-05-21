@@ -366,6 +366,129 @@ class GdThumb extends ThumbBase
 	}
 	
 	/**
+	 * Crops an image from the center with provided dimensions
+	 * 
+	 * If no height is given, the width will be used as a height, thus creating a square crop
+	 * 
+	 * @param int $cropWidth
+	 * @param int $cropHeight
+	 */
+	public function cropFromCenter ($cropWidth, $cropHeight = null)
+	{
+		if (!is_numeric($cropWidth))
+		{
+			throw new InvalidArgumentException('$cropWidth must be numeric');
+		}
+		
+		if ($cropHeight !== null && !is_numeric($cropHeight))
+		{
+			throw new InvalidArgumentException('$cropHeight must be numeric');
+		}
+		
+		if ($cropHeight === null)
+		{
+			$cropHeight = $cropWidth;
+		}
+		
+		$cropWidth	= ($this->currentDimensions['width'] < $cropWidth) ? $this->currentDimensions['width'] : $cropWidth;
+		$cropHeight = ($this->currentDimensions['height'] < $cropHeight) ? $this->currentDimensions['height'] : $cropHeight;
+		
+		$cropX = intval(($this->currentDimensions['width'] - $cropWidth) / 2);
+		$cropY = intval(($this->currentDimensions['height'] - $cropHeight) / 2);
+		
+		$this->crop($cropX, $cropY, $cropWidth, $cropHeight);
+	}
+	
+	/**
+	 * Vanilla Cropping - Crops from x,y with specified width and height
+	 * 
+	 * @param int $startX
+	 * @param int $startY
+	 * @param int $cropWidth
+	 * @param int $cropHeight
+	 */
+	public function crop ($startX, $startY, $cropWidth, $cropHeight)
+	{
+		// validate input
+		if (!is_numeric($startX))
+		{
+			throw new InvalidArgumentException('$startX must be numeric');
+		}
+		
+		if (!is_numeric($startY))
+		{
+			throw new InvalidArgumentException('$startY must be numeric');
+		}
+		
+		if (!is_numeric($cropWidth))
+		{
+			throw new InvalidArgumentException('$cropWidth must be numeric');
+		}
+		
+		if (!is_numeric($cropHeight))
+		{
+			throw new InvalidArgumentException('$cropHeight must be numeric');
+		}
+		
+		// do some calculations
+		$cropWidth	= ($this->currentDimensions['width'] < $cropWidth) ? $this->currentDimensions['width'] : $cropWidth;
+		$cropHeight = ($this->currentDimensions['height'] < $cropHeight) ? $this->currentDimensions['height'] : $cropHeight;
+		
+		// ensure everything's in bounds
+		if (($startX + $cropWidth) > $this->currentDimensions['width'])
+		{
+			$startX = ($this->currentDimensions['width'] - $cropWidth);
+			
+		}
+		
+		if (($startY + $cropHeight) > $this->currentDimensions['height'])
+		{
+			$startY = ($this->currentDimensions['height'] - $cropHeight);
+		}
+		
+		if ($startX < 0) 
+		{
+			$startX = 0;
+		}
+		
+	    if ($startY < 0) 
+		{
+			$startY = 0;
+		}
+		
+		// create the working image
+		if (function_exists('imagecreatetruecolor'))
+		{
+			$this->workingImage = imagecreatetruecolor($cropWidth, $cropHeight);
+		}
+		else
+		{
+			$this->workingImage = imagecreate($cropWidth, $cropHeight);
+		}
+		
+		$this->preserveAlpha();
+		
+		imagecopyresampled
+		(
+			$this->workingImage,
+			$this->oldImage,
+			0,
+			0,
+			$startX,
+			$startY,
+			$cropWidth,
+			$cropHeight,
+			$cropWidth,
+			$cropHeight
+		);
+		
+		$this->oldImage 					= $this->workingImage;
+		$this->newImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $cropWidth;
+		$this->currentDimensions['height'] 	= $cropHeight;
+	}
+	
+	/**
 	 * Shows or saves an image
 	 * 
 	 * Technically, you wouldn't want to use this function to save an image (use $this->save() instead), but 
@@ -611,6 +734,69 @@ class GdThumb extends ThumbBase
 	public function setPercent ($percent)
 	{
 		$this->percent = $percent;
+	} 
+	
+	/**
+	 * Returns $newImage.
+	 *
+	 * @see GdThumb::$newImage
+	 */
+	public function getNewImage ()
+	{
+		return $this->newImage;
+	}
+	
+	/**
+	 * Sets $newImage.
+	 *
+	 * @param object $newImage
+	 * @see GdThumb::$newImage
+	 */
+	public function setNewImage ($newImage)
+	{
+		$this->newImage = $newImage;
+	}
+	
+	/**
+	 * Returns $oldImage.
+	 *
+	 * @see GdThumb::$oldImage
+	 */
+	public function getOldImage ()
+	{
+		return $this->oldImage;
+	}
+	
+	/**
+	 * Sets $oldImage.
+	 *
+	 * @param object $oldImage
+	 * @see GdThumb::$oldImage
+	 */
+	public function setOldImage ($oldImage)
+	{
+		$this->oldImage = $oldImage;
+	}
+	
+	/**
+	 * Returns $workingImage.
+	 *
+	 * @see GdThumb::$workingImage
+	 */
+	public function getWorkingImage ()
+	{
+		return $this->workingImage;
+	}
+	
+	/**
+	 * Sets $workingImage.
+	 *
+	 * @param object $workingImage
+	 * @see GdThumb::$workingImage
+	 */
+	public function setWorkingImage ($workingImage)
+	{
+		$this->workingImage = $workingImage;
 	} 
 	
 	
