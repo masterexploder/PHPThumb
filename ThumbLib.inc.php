@@ -10,13 +10,19 @@
  * these files get included one way or another in your code.
  * 
  * @author Ian Selby <ian@gen-x-design.com>
- * @copyright Copyright 2008 Gen X Design
+ * @copyright Copyright 2009 Gen X Design
  * @version 3.0
  * @package PhpThumb
  * @filesource
  */
 
+/**
+ * Include the ThumbBase Class
+ */
 require_once 'ThumbBase.inc.php';
+/**
+ * Include the GdThumb Class
+ */
 require_once 'GdThumb.inc.php';
 
 /**

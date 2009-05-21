@@ -5,7 +5,7 @@
  * This file contains the definition for the ThumbBase object
  * 
  * @author Ian Selby <ian@gen-x-design.com>
- * @copyright Copyright 2008 Gen X Design
+ * @copyright Copyright 2009 Gen X Design
  * @version 3.0
  * @package PhpThumb
  * @filesource

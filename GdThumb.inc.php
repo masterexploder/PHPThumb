@@ -1,5 +1,24 @@
 <?php
+/**
+ * PhpThumb GD Thumb Class Definition File
+ * 
+ * This file contains the definition for the GdThumb object
+ * 
+ * @author Ian Selby <ian@gen-x-design.com>
+ * @copyright Copyright 2009 Gen X Design
+ * @version 3.0
+ * @package PhpThumb
+ * @filesource
+ */
 
+/**
+ * GdThumb Class Definition
+ * 
+ * This is the GD Implementation of the PHP Thumb library.
+ * 
+ * @package PhpThumb
+ * @subpackage Core
+ */
 class GdThumb extends ThumbBase
 {
 	/**
