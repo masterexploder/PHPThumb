@@ -489,6 +489,50 @@ class GdThumb extends ThumbBase
 	}
 	
 	/**
+	 * Rotates image either 90 degrees clockwise or counter-clockwise
+	 * 
+	 * @param string $direction
+	 */
+	public function rotateImage ($direction = 'CW') 
+	{
+    	if ($direction == 'CW') 
+		{
+    		$this->rotateImageNDegrees(90);
+    	}
+    	else 
+		{
+			$this->rotateImageNDegrees(-90);
+		}
+    }
+	
+	/**
+	 * Rotates image specified number of degrees
+	 * 
+	 * @param int $degrees
+	 */
+	public function rotateImageNDegrees ($degrees)
+	{
+		if (!is_numeric($degrees))
+		{
+			throw new InvalidArgumentException('$degrees must be numeric');
+		}
+		
+		if (!function_exists('imagerotate'))
+		{
+			throw new RuntimeException('Your version of GD does not support image rotation.');
+		}
+		
+		$this->workingImage = imagerotate($this->workingImage, $degrees, 0);
+    	
+		$newWidth 							= $this->currentDimensions['height'];
+    	$newHeight 							= $this->currentDimensions['width'];
+		$this->oldImage 					= $this->workingImage;
+		$this->newImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $newWidth;
+		$this->currentDimensions['height'] 	= $newHeight;
+	}
+	
+	/**
 	 * Shows or saves an image
 	 * 
 	 * Technically, you wouldn't want to use this function to save an image (use $this->save() instead), but 
