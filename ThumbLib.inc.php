@@ -17,6 +17,7 @@
  */
 
 require_once 'ThumbBase.inc.php';
+require_once 'GdThumb.inc.php';
 
 /**
  * PhpThumbFactory Object
@@ -79,7 +80,7 @@ class PhpThumbFactory
 	public static function create ($filename = '')
 	{
 		// map our implementation to their class names
-		$implementation_map = array
+		$implementationMap = array
 		(
 			'imagick'	=> 'ImagickThumb',
 			'gd' 		=> 'GdThumb'
@@ -93,13 +94,13 @@ class PhpThumbFactory
 		// attempt to load the default implementation
 		if ($pt->isValidImplementation(self::$defaultImplemenation))
 		{
-			$imp = $implementation_map[self::$defaultImplemenation];
+			$imp = $implementationMap[self::$defaultImplemenation];
 			return new $imp($filename);
 		}
 		// load the gd implementation if default failed
 		else if ($pt->isValidImplementation('gd'))
 		{
-			$imp = $implementation_map['gd'];
+			$imp = $implementationMap['gd'];
 			return new $imp($filename);
 		}
 		// throw an exception if we can't load
@@ -300,7 +301,7 @@ class PhpThumb
 		{
 			while (false !== ($file = readdir($handle)))
 			{
-				if ($file == '.' || $file == '..')
+				if ($file == '.' || $file == '..' || $file == '.svn')
 				{
 					continue;
 				}
@@ -310,7 +311,3 @@ class PhpThumb
 		}
 	}
 }
-
-
-
-?>

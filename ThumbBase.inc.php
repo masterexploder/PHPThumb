@@ -30,7 +30,7 @@ class ThumbBase
 	 * 
 	 * @var array
 	 */
-	private $imported;
+	protected $imported;
 	/**
 	 * All imported object functions
 	 * 
@@ -38,17 +38,48 @@ class ThumbBase
 	 * 
 	 * @var array
 	 */
-	private $importedFunctions;
+	protected $importedFunctions;
+	/**
+	 * The last error message raised
+	 * 
+	 * @var string
+	 */
+	protected $errorMessage;
+	/**
+	 * Whether or not the current instance has any errors
+	 * 
+	 * @var bool
+	 */
+	protected $hasError;
+	/**
+	 * The name of the file we're manipulating
+	 * 
+	 * This must include the path to the file (absolute paths recommended)
+	 * 
+	 * @var string
+	 */
+	protected $fileName;
+	/**
+	 * What the file format is (mime-type)
+	 * 
+	 * @var string
+	 */
+	protected $format;
 	
 	/**
 	 * Class constructor
 	 * 
 	 * @return ThumbBase
 	 */
-	public function __construct ()
+	public function __construct ($fileName)
 	{
 		$this->imported				= array();
 		$this->importedFunctions	= array();
+		$this->errorMessage			= null;
+		$this->hasError				= false;
+		$this->fileName				= $fileName;
+		
+		$this->fileExistsAndReadable();
 	}
 	
 	/**
@@ -76,6 +107,38 @@ class ThumbBase
 		{
 			$this->importedFunctions[$functionName] = &$newImport;
 		}
+	}
+	
+	/**
+	 * Checks to see if $this->fileName exists and is readable
+	 * 
+	 */
+	protected function fileExistsAndReadable ()
+	{
+		if (!file_exists($this->fileName))
+		{
+			$this->triggerError('Image file not found: ' . $this->fileName);
+		}
+		elseif (!is_readable($this->fileName))
+		{
+			$this->triggerError('Image file not readable: ' . $this->fileName);
+		}
+	}
+	
+	/**
+	 * Sets $this->errorMessage to $errorMessage and throws an exception
+	 * 
+	 * Also sets $this->hasError to true, so even if the exceptions are caught, we don't
+	 * attempt to proceed with any other functions
+	 * 
+	 * @param string $errorMessage
+	 */
+	protected function triggerError ($errorMessage)
+	{
+		$this->hasError 	= true;
+		$this->errorMessage	= $errorMessage;
+		
+		throw new Exception ($errorMessage);
 	}
 	
 	/**
@@ -121,5 +184,3 @@ class ThumbBase
     }
 
 }
-
-?>
