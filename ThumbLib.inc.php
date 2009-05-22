@@ -325,6 +325,12 @@ class PhpThumb
 		}
 	}
 	
+	/**
+	 * Returns the plugin registry for the supplied implementation
+	 * 
+	 * @return array
+	 * @param string $implementation
+	 */
 	public function getPluginRegistry ($implementation)
 	{
 		$returnArray = array();
