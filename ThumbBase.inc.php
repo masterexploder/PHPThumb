@@ -82,6 +82,11 @@ class ThumbBase
 		$this->fileExistsAndReadable();
 	}
 	
+	/**
+	 * Imports plugins in $registry to the class
+	 * 
+	 * @param array $registry
+	 */
 	public function importPlugins ($registry)
 	{
 		foreach ($registry as $plugin => $meta)
@@ -110,7 +115,7 @@ class ThumbBase
 		// add the object to the registry
 		array_push($this->imported, array($importName, $newImport));
 		
-		// add teh methods to the registry
+		// add the methods to the registry
 		foreach ($importFunctions as $key => $functionName)
 		{
 			$this->importedFunctions[$functionName] = &$newImport;
@@ -168,7 +173,7 @@ class ThumbBase
 			return call_user_func_array(array($this->importedFunctions[$method], $method), $args);
 		}
 		
-		throw new Exception ('Call to undefined method/class function: ' . $method);
+		throw new BadMethodCallException ('Call to undefined method/class function: ' . $method);
 	}
 
     /**
