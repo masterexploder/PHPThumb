@@ -552,7 +552,7 @@ class GdThumb extends ThumbBase
 			throw new RuntimeException('Your version of GD does not support image rotation.');
 		}
 		
-		$this->workingImage = imagerotate($this->workingImage, $degrees, 0);
+		$this->workingImage = imagerotate($this->oldImage, $degrees, 0);
     	
 		$newWidth 							= $this->currentDimensions['height'];
     	$newHeight 							= $this->currentDimensions['width'];

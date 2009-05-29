@@ -26,10 +26,7 @@
 require_once '../ThumbLib.inc.php';
 
 $thumb = PhpThumbFactory::create('test.jpg');
-$thumb->rotateImage('CW');
-
-// or:
-// $thumb->rotate('CCW');
+$thumb->rotateImageNDegrees(180);
 
 $thumb->show();
 
