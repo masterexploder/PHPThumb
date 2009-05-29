@@ -38,6 +38,7 @@ require_once 'GdThumb.inc.php';
 
 define('THUMBLIB_BASE_PATH', dirname(__FILE__));
 define('THUMBLIB_PLUGIN_PATH', THUMBLIB_BASE_PATH . '/thumb_plugins/');
+define('DEFAULT_THUMBLIB_IMPLEMENTATION', 'gd');
 
 /**
  * PhpThumbFactory Object
@@ -70,7 +71,7 @@ class PhpThumbFactory
 	 * 
 	 * @var string
 	 */
-	public static $defaultImplemenation = 'gd';
+	public static $defaultImplemenation = DEFAULT_THUMBLIB_IMPLEMENTATION;
 	/**
 	 * Where the plugins can be loaded from
 	 * 

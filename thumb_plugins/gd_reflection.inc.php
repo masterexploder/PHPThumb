@@ -175,4 +175,5 @@ class GdReflectionLib
     }
 }
 
+$pt = PhpThumb::getInstance();
 $pt->registerPlugin('GdReflectionLib', 'gd');
