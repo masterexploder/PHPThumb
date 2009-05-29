@@ -166,6 +166,7 @@ class GdThumb extends ThumbBase
 	 * 
 	 * @param int $maxWidth The maximum width of the image in pixels
 	 * @param int $maxHeight The maximum height of the image in pixels
+	 * @return GdThumb
 	 */
 	public function resize ($maxWidth = 0, $maxHeight = 0)
 	{
@@ -227,6 +228,8 @@ class GdThumb extends ThumbBase
 		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $this->newDimensions['newWidth'];
 		$this->currentDimensions['height'] 	= $this->newDimensions['newHeight'];
+		
+		return $this;
 	}
 	
 	/**
@@ -237,6 +240,7 @@ class GdThumb extends ThumbBase
 	 * 
 	 * @param int $maxWidth
 	 * @param int $maxHeight
+	 * @return GdThumb
 	 */
 	public function adaptiveResize ($width, $height)
 	{
@@ -326,6 +330,8 @@ class GdThumb extends ThumbBase
 		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $this->maxWidth;
 		$this->currentDimensions['height'] 	= $this->maxHeight;
+		
+		return $this;
 	}
 	
 	/**
@@ -334,6 +340,7 @@ class GdThumb extends ThumbBase
 	 * Percentage should be whole number representation (i.e. 1-100)
 	 * 
 	 * @param int $percent
+	 * @return GdThumb
 	 */
 	public function resizePercent ($percent = 0)
 	{
@@ -374,6 +381,8 @@ class GdThumb extends ThumbBase
 		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $this->newDimensions['newWidth'];
 		$this->currentDimensions['height'] 	= $this->newDimensions['newHeight'];
+		
+		return $this;
 	}
 	
 	/**
@@ -383,6 +392,7 @@ class GdThumb extends ThumbBase
 	 * 
 	 * @param int $cropWidth
 	 * @param int $cropHeight
+	 * @return GdThumb
 	 */
 	public function cropFromCenter ($cropWidth, $cropHeight = null)
 	{
@@ -408,6 +418,8 @@ class GdThumb extends ThumbBase
 		$cropY = intval(($this->currentDimensions['height'] - $cropHeight) / 2);
 		
 		$this->crop($cropX, $cropY, $cropWidth, $cropHeight);
+		
+		return $this;
 	}
 	
 	/**
@@ -417,6 +429,7 @@ class GdThumb extends ThumbBase
 	 * @param int $startY
 	 * @param int $cropWidth
 	 * @param int $cropHeight
+	 * @return GdThumb
 	 */
 	public function crop ($startX, $startY, $cropWidth, $cropHeight)
 	{
@@ -497,12 +510,15 @@ class GdThumb extends ThumbBase
 		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $cropWidth;
 		$this->currentDimensions['height'] 	= $cropHeight;
+		
+		return $this;
 	}
 	
 	/**
 	 * Rotates image either 90 degrees clockwise or counter-clockwise
 	 * 
 	 * @param string $direction
+	 * @retunrn GdThumb
 	 */
 	public function rotateImage ($direction = 'CW') 
 	{
@@ -514,12 +530,15 @@ class GdThumb extends ThumbBase
 		{
 			$this->rotateImageNDegrees(-90);
 		}
+		
+		return $this;
     }
 	
 	/**
 	 * Rotates image specified number of degrees
 	 * 
 	 * @param int $degrees
+	 * @return GdThumb
 	 */
 	public function rotateImageNDegrees ($degrees)
 	{
@@ -541,6 +560,8 @@ class GdThumb extends ThumbBase
 		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $newWidth;
 		$this->currentDimensions['height'] 	= $newHeight;
+		
+		return $this;
 	}
 	
 	/**
@@ -552,6 +573,7 @@ class GdThumb extends ThumbBase
 	 * image to that location.
 	 * 
 	 * @param string $name The full path to the file and the filename to save
+	 * @return GdThumb
 	 */
 	public function show ($name = null) 
 	{
@@ -591,6 +613,8 @@ class GdThumb extends ThumbBase
 				}
 				break;
 		}
+		
+		return $this;
 	}
 	
 	/**
@@ -603,6 +627,7 @@ class GdThumb extends ThumbBase
 	 * RuntimeException is thrown.
 	 * 
 	 * @param string $fileName The full path and filename of the image to save
+	 * @return GdThumb
 	 */
 	public function save ($fileName)
 	{
@@ -628,6 +653,8 @@ class GdThumb extends ThumbBase
 		}
 		
 		$this->show($fileName);
+		
+		return $this;
 	}
 	
 	#################################
