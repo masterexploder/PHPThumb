@@ -32,7 +32,7 @@
  * @package PhpThumb
  * @subpackage Core
  */
-class ThumbBase 
+abstract class ThumbBase 
 {
 	/**
 	 * All imported objects

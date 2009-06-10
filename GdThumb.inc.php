@@ -39,12 +39,6 @@ class GdThumb extends ThumbBase
 	 */
 	protected $oldImage;
 	/**
-	 * The new image (after manipulation)
-	 * 
-	 * @var resource
-	 */
-	protected $newImage;
-	/**
 	 * The working image (used during manipulation)
 	 * 
 	 * @var resource
@@ -124,8 +118,6 @@ class GdThumb extends ThumbBase
 			'height'	=> $size[1]
 		);
 		
-		$this->newImage = $this->oldImage;
-		
 		$this->setOptions($options);
 		
 		// TODO: Port gatherImageMeta to a separate function that can be called to extract exif data
@@ -137,11 +129,6 @@ class GdThumb extends ThumbBase
 	 */
 	public function __destruct ()
 	{
-		if (is_resource($this->newImage))
-		{
-			imagedestroy($this->newImage);
-		}
-		
 		if (is_resource($this->oldImage))
 		{
 			imagedestroy($this->oldImage);
@@ -225,7 +212,6 @@ class GdThumb extends ThumbBase
 
 		// update all the variables and resources to be correct
 		$this->oldImage 					= $this->workingImage;
-		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $this->newDimensions['newWidth'];
 		$this->currentDimensions['height'] 	= $this->newDimensions['newHeight'];
 		
@@ -327,7 +313,6 @@ class GdThumb extends ThumbBase
 		
 		// update all the variables and resources to be correct
 		$this->oldImage 					= $this->workingImage;
-		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $this->maxWidth;
 		$this->currentDimensions['height'] 	= $this->maxHeight;
 		
@@ -378,7 +363,6 @@ class GdThumb extends ThumbBase
 		);
 
 		$this->oldImage 					= $this->workingImage;
-		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $this->newDimensions['newWidth'];
 		$this->currentDimensions['height'] 	= $this->newDimensions['newHeight'];
 		
@@ -507,7 +491,6 @@ class GdThumb extends ThumbBase
 		);
 		
 		$this->oldImage 					= $this->workingImage;
-		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $cropWidth;
 		$this->currentDimensions['height'] 	= $cropHeight;
 		
@@ -557,7 +540,6 @@ class GdThumb extends ThumbBase
 		$newWidth 							= $this->currentDimensions['height'];
     	$newHeight 							= $this->currentDimensions['width'];
 		$this->oldImage 					= $this->workingImage;
-		$this->newImage 					= $this->workingImage;
 		$this->currentDimensions['width'] 	= $newWidth;
 		$this->currentDimensions['height'] 	= $newHeight;
 		
@@ -565,52 +547,34 @@ class GdThumb extends ThumbBase
 	}
 	
 	/**
-	 * Shows or saves an image
+	 * Shows an image
 	 * 
-	 * Technically, you wouldn't want to use this function to save an image (use $this->save() instead), but 
-	 * you could.  Anyway, this function will show the current image by first sending the appropriate header
-	 * for the format, and then outputting the image data.  Otherwise, if a name is provided, we'll save the 
-	 * image to that location.
+	 * This function will show the current image by first sending the appropriate header
+	 * for the format, and then outputting the image data. If headers have already been sent, 
+	 * a runtime exception will be thrown 
 	 * 
-	 * @param string $name The full path to the file and the filename to save
 	 * @return GdThumb
 	 */
-	public function show ($name = null) 
+	public function show () 
 	{
+		if (headers_sent())
+		{
+			throw new RuntimeException('Cannot show image, headers have already been sent');
+		}
+		
 		switch ($this->format) 
 		{
 			case 'GIF':
-				if ($name !== null) 
-				{
-					imagegif($this->newImage, $name);
-				}
-				else 
-				{
-					header('Content-type: image/gif');
-					imagegif($this->newImage);
-				}
+				header('Content-type: image/gif');
+				imagegif($this->oldImage);
 				break;
 			case 'JPG':
-				if ($name !== null) 
-				{
-					imagejpeg($this->newImage, $name, $this->options['jpegQuality']);
-				}
-				else 
-				{
-					header('Content-type: image/jpeg');
-					imagejpeg($this->newImage, null, $this->options['jpegQuality']);
-				}
+				header('Content-type: image/jpeg');
+				imagejpeg($this->oldImage, null, $this->options['jpegQuality']);
 				break;
 			case 'PNG':
-				if ($name !== null) 
-				{
-					imagepng($this->newImage, $name);
-				}
-				else 
-				{
-					header('Content-type: image/png');
-					imagepng($this->newImage);
-				}
+				header('Content-type: image/png');
+				imagepng($this->oldImage);
 				break;
 		}
 		
@@ -652,7 +616,18 @@ class GdThumb extends ThumbBase
 			}
 		}
 		
-		$this->show($fileName);
+		switch ($this->format) 
+		{
+			case 'GIF':
+				imagegif($this->oldImage, $fileName);
+				break;
+			case 'JPG':
+				imagejpeg($this->oldImage, $fileName, $this->options['jpegQuality']);
+				break;
+			case 'PNG':
+				imagepng($this->oldImage, $fileName);
+				break;
+		}
 		
 		return $this;
 	}
@@ -687,7 +662,7 @@ class GdThumb extends ThumbBase
 			(
 				'resizeUp'				=> false,
 				'jpegQuality'			=> 100,
-				'correctPermissions'	=> true,
+				'correctPermissions'	=> false,
 				'preserveAlpha'			=> true,
 				'alphaMaskColor'		=> array (255, 255, 255),
 				'preserveTransparency'	=> true,
@@ -817,27 +792,6 @@ class GdThumb extends ThumbBase
 	{
 		$this->percent = $percent;
 	} 
-	
-	/**
-	 * Returns $newImage.
-	 *
-	 * @see GdThumb::$newImage
-	 */
-	public function getNewImage ()
-	{
-		return $this->newImage;
-	}
-	
-	/**
-	 * Sets $newImage.
-	 *
-	 * @param object $newImage
-	 * @see GdThumb::$newImage
-	 */
-	public function setNewImage ($newImage)
-	{
-		$this->newImage = $newImage;
-	}
 	
 	/**
 	 * Returns $oldImage.
