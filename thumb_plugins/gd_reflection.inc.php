@@ -40,6 +40,7 @@ class GdReflectionLib
 	protected $parentInstance;
 	protected $currentDimensions;
 	protected $workingImage;
+	protected $newImage;
 	protected $options;
 	
 	public function createReflection ($percent, $reflection, $white, $border, $borderColor, &$that)
@@ -48,6 +49,7 @@ class GdReflectionLib
 		$this->parentInstance 		= $that;
 		$this->currentDimensions 	= $this->parentInstance->getCurrentDimensions();
 		$this->workingImage			= $this->parentInstance->getWorkingImage();
+		$this->newImage				= $this->parentInstance->getOldImage();
 		$this->options				= $this->parentInstance->getOptions();
 		
 		$width				= $this->currentDimensions['width'];
@@ -120,6 +122,8 @@ class GdReflectionLib
 		$this->currentDimensions['width'] 	= $width;
 		$this->currentDimensions['height']	= $newHeight;
 		$this->parentInstance->setCurrentDimensions($this->currentDimensions);
+		
+		return $that;
 	}
 	
 	/**
