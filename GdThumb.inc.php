@@ -884,8 +884,8 @@ class GdThumb extends ThumbBase
 		
 		return array
 		(
-			'newWidth'	=> intval($newWidth),
-			'newHeight'	=> intval($this->maxHeight)
+			'newWidth'	=> ceil($newWidth),
+			'newHeight'	=> ceil($this->maxHeight)
 		);
 	}
 	
@@ -903,8 +903,8 @@ class GdThumb extends ThumbBase
 		
 		return array 
 		(
-			'newWidth'	=> intval($newWidth),
-			'newHeight'	=> intval($newHeight)
+			'newWidth'	=> ceil($newWidth),
+			'newHeight'	=> ceil($newHeight)
 		);
 	}
 	
