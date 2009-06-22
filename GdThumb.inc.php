@@ -590,11 +590,22 @@ class GdThumb extends ThumbBase
 	 * is set as an option ($this->options['correctPermissions']).  If the target cannot be made writeable, then a
 	 * RuntimeException is thrown.
 	 * 
+	 * TODO: Create additional paramter for color matte when saving images with alpha to non-alpha formats (i.e. PNG => JPG)
+	 * 
 	 * @param string $fileName The full path and filename of the image to save
+	 * @param string $format The format to save the image in (optional, must be one of [GIF,JPG,PNG]
 	 * @return GdThumb
 	 */
-	public function save ($fileName)
+	public function save ($fileName, $format = null)
 	{
+		$validFormats = array('GIF', 'JPG', 'PNG');
+		$format = ($format !== null) ? strtoupper($format) : $this->format;
+		
+		if (!in_array($format, $validFormats))
+		{
+			throw new InvalidArgumentException ('Invalid format type specified in save function: ' . $format);
+		}
+		
 		// make sure the directory is writeable
 		if (!is_writeable(dirname($fileName)))
 		{
@@ -616,7 +627,7 @@ class GdThumb extends ThumbBase
 			}
 		}
 		
-		switch ($this->format) 
+		switch ($format) 
 		{
 			case 'GIF':
 				imagegif($this->oldImage, $fileName);
