@@ -1030,7 +1030,17 @@ class GdThumb extends ThumbBase
 		// non-image files will return false
 		if ($formatInfo === false)
 		{
-			$this->triggerError('File is not a valid image: ' . $this->fileName);
+			if ($this->remoteImage)
+			{
+				$this->triggerError('Could not determine format of remote image: ' . $this->fileName);
+			}
+			else
+			{
+				$this->triggerError('File is not a valid image: ' . $this->fileName);
+			}
+			
+			// make sure we really stop execution
+			return;
 		}
 		
 		$mimeType = isset($formatInfo['mime']) ? $formatInfo['mime'] : null;
@@ -1075,7 +1085,13 @@ class GdThumb extends ThumbBase
 		
 		if (!$isCompatible)
 		{
-			$this->triggerError('Your GD installation does not support ' . $this->format . ' image types');	
+			// one last check for "JPEG" instead
+			$isCompatible = $gdInfo['JPEG Support'];
+			
+			if (!$isCompatible)
+			{
+				$this->triggerError('Your GD installation does not support ' . $this->format . ' image types');
+			}
 		}
 	}
 	

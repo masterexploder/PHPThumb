@@ -76,6 +76,12 @@ abstract class ThumbBase
 	 * @var string
 	 */
 	protected $format;
+	/**
+	 * Whether or not the image is hosted remotely
+	 * 
+	 * @var bool
+	 */
+	protected $remoteImage;
 	
 	/**
 	 * Class constructor
@@ -89,6 +95,7 @@ abstract class ThumbBase
 		$this->errorMessage			= null;
 		$this->hasError				= false;
 		$this->fileName				= $fileName;
+		$this->remoteImage			= false;
 		
 		$this->fileExistsAndReadable();
 	}
@@ -139,6 +146,12 @@ abstract class ThumbBase
 	 */
 	protected function fileExistsAndReadable ()
 	{
+		if (stristr($this->fileName, 'http://') !== false)
+		{
+			$this->remoteImage = true;
+			return;
+		}
+		
 		if (!file_exists($this->fileName))
 		{
 			$this->triggerError('Image file not found: ' . $this->fileName);
