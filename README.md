@@ -10,4 +10,4 @@ instance (also known as chaining), without the need to save and
 re-initialize the class with every manipulation.
 
 More information and documentation is available at the project's 
-homepage: http://phpthumb.gxdlabs.com
+homepage: [http://phpthumb.gxdlabs.com](http://phpthumb.gxdlabs.com)
