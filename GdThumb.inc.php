@@ -1076,6 +1076,8 @@ class GdThumb extends ThumbBase
 				$isCompatible = $gdInfo['GIF Create Support'];
 				break;
 			case 'JPG':
+				$isCompatible = (isset($gdInfo['JPG Support']) || isset($gdInfo['JPEG Support'])) ? true : false;
+				break;
 			case 'PNG':
 				$isCompatible = $gdInfo[$this->format . ' Support'];
 				break;
