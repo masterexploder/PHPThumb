@@ -91,12 +91,16 @@ class GdThumb extends ThumbBase
 	 * @return GdThumb 
 	 * @param string $fileName
 	 */
-	public function __construct ($fileName, $options = array())
+	public function __construct ($fileName, $options = array(), $isDataStream = false)
 	{
-		parent::__construct($fileName);
+		parent::__construct($fileName, $isDataStream);
 		
 		$this->determineFormat();
-		$this->verifyFormatCompatiblity();
+		
+		if ($this->isDataStream === false)
+		{
+			$this->verifyFormatCompatiblity();
+		}
 		
 		switch ($this->format)
 		{
@@ -109,13 +113,15 @@ class GdThumb extends ThumbBase
 			case 'PNG':
 				$this->oldImage = imagecreatefrompng($this->fileName);
 				break;
+			case 'STRING':
+				$this->oldImage = imagecreatefromstring($this->fileName);
+				break;
 		}
-		
-		$size = getimagesize($this->fileName);
+	
 		$this->currentDimensions = array
 		(
-			'width' 	=> $size[0],
-			'height'	=> $size[1]
+			'width' 	=> imagesx($this->oldImage),
+			'height'	=> imagesy($this->oldImage)
 		);
 		
 		$this->setOptions($options);
@@ -553,9 +559,10 @@ class GdThumb extends ThumbBase
 	 * for the format, and then outputting the image data. If headers have already been sent, 
 	 * a runtime exception will be thrown 
 	 * 
+	 * @param bool $rawData Whether or not the raw image stream should be output
 	 * @return GdThumb
 	 */
-	public function show () 
+	public function show ($rawData = false) 
 	{
 		if (headers_sent())
 		{
@@ -565,20 +572,49 @@ class GdThumb extends ThumbBase
 		switch ($this->format) 
 		{
 			case 'GIF':
-				header('Content-type: image/gif');
+				if ($rawData === false) 
+				{ 
+					header('Content-type: image/gif'); 
+				}
 				imagegif($this->oldImage);
 				break;
 			case 'JPG':
-				header('Content-type: image/jpeg');
+				if ($rawData === false) 
+				{ 
+					header('Content-type: image/jpeg'); 
+				}
 				imagejpeg($this->oldImage, null, $this->options['jpegQuality']);
 				break;
 			case 'PNG':
-				header('Content-type: image/png');
+			case 'STRING':
+				if ($rawData === false) 
+				{ 
+					header('Content-type: image/png'); 
+				}
 				imagepng($this->oldImage);
 				break;
 		}
 		
 		return $this;
+	}
+	
+	/**
+	 * Returns the Working Image as a String
+	 *
+	 * This function is useful for getting the raw image data as a string for storage in
+	 * a database, or other similar things.
+	 *
+	 * @return string
+	 */
+	public function getImageAsString ()
+	{
+		$data = null;
+		ob_start();
+		$this->show(true);
+		$data = ob_get_contents();
+		ob_end_clean();
+		
+		return $data;
 	}
 	
 	/**
@@ -1025,6 +1061,12 @@ class GdThumb extends ThumbBase
 	 */
 	protected function determineFormat ()
 	{
+		if ($this->isDataStream === true)
+		{
+			$this->format = 'STRING';
+			return;
+		}
+		
 		$formatInfo = getimagesize($this->fileName);
 		
 		// non-image files will return false

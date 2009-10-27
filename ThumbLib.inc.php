@@ -103,7 +103,7 @@ class PhpThumbFactory
 	 * @uses PhpThumb
 	 * @param string $filename The path and file to load [optional]
 	 */
-	public static function create ($filename = null, $options = array())
+	public static function create ($filename = null, $options = array(), $isDataStream = false)
 	{
 		// map our implementation to their class names
 		$implementationMap = array
@@ -124,14 +124,14 @@ class PhpThumbFactory
 		if ($pt->isValidImplementation(self::$defaultImplemenation))
 		{
 			$imp = $implementationMap[self::$defaultImplemenation];
-			$toReturn = new $imp($filename, $options);
+			$toReturn = new $imp($filename, $options, $isDataStream);
 		}
 		// load the gd implementation if default failed
 		else if ($pt->isValidImplementation('gd'))
 		{
 			$imp = $implementationMap['gd'];
 			$implementation = 'gd';
-			$toReturn = new $imp($filename, $options);
+			$toReturn = new $imp($filename, $options, $isDataStream);
 		}
 		// throw an exception if we can't load
 		else

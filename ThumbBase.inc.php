@@ -82,13 +82,22 @@ abstract class ThumbBase
 	 * @var bool
 	 */
 	protected $remoteImage;
+	/**
+	 * Whether or not the current image is an actual file, or the raw file data
+	 *
+	 * By "raw file data" it's meant that we're actually passing the result of something
+	 * like file_get_contents() or perhaps from a database blob
+	 * 
+	 * @var bool
+	 */
+	protected $isDataStream;
 	
 	/**
 	 * Class constructor
 	 * 
 	 * @return ThumbBase
 	 */
-	public function __construct ($fileName)
+	public function __construct ($fileName, $isDataStream = false)
 	{
 		$this->imported				= array();
 		$this->importedFunctions	= array();
@@ -96,6 +105,7 @@ abstract class ThumbBase
 		$this->hasError				= false;
 		$this->fileName				= $fileName;
 		$this->remoteImage			= false;
+		$this->isDataStream			= $isDataStream;
 		
 		$this->fileExistsAndReadable();
 	}
@@ -146,6 +156,11 @@ abstract class ThumbBase
 	 */
 	protected function fileExistsAndReadable ()
 	{
+		if ($this->isDataStream === true)
+		{
+			return;
+		}
+		
 		if (stristr($this->fileName, 'http://') !== false)
 		{
 			$this->remoteImage = true;
