@@ -26,7 +26,6 @@ module PhpThumbHelper
   end
   
   def self.build_docs
-    sh %{rm -rf #{PhpThumbHelper::DOCS_DIR}/}
     sh %{phpdoc -d #{PhpThumbHelper::SRC_DIR} -t #{PhpThumbHelper::DOCS_DIR} -o HTML:frames:DOM/earthli}
   end
 end
