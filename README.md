@@ -32,3 +32,7 @@ would be doing unless you want to fork this project and release your version of 
 On that note, if you'd like to contribute to the project, you can either fork it and
 submit back to me, or you can ask to be a contributor.  Reach out to me if you're 
 interested, I'm happy to chat :)
+
+## License
+
+PHP Thumb is released under MIT license.
