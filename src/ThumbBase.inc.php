@@ -208,7 +208,7 @@ abstract class ThumbBase
 	{
 		if( array_key_exists($method, $this->importedFunctions))
 		{
-			$args[] = $this;
+			$args[] =& $this;
 			return call_user_func_array(array($this->importedFunctions[$method], $method), $args);
 		}
 		
