@@ -237,14 +237,19 @@ class GdThumb extends ThumbBase
 	public function adaptiveResize ($width, $height)
 	{
 		// make sure our arguments are valid
-		if (!is_numeric($width) || $width  == 0)
+		if ((!is_numeric($width) || $width  == 0) && (!is_numeric($height) || $height == 0))
 		{
-			throw new InvalidArgumentException('$width must be numeric and greater than zero');
+			throw new InvalidArgumentException('$width and $height must be numeric and greater than zero');
 		}
 		
-		if (!is_numeric($height) || $height == 0)
+		if (!is_numeric($width) || $width  == 0)
 		{
-			throw new InvalidArgumentException('$height must be numeric and greater than zero');
+			$width = ( $height * $this->currentDimensions['width'] ) / $this->currentDimensions['height'];
+		}
+		
+		if (!is_numeric($height) || $height  == 0)
+		{
+			$height = ( $width * $this->currentDimensions['height'] ) / $this->currentDimensions['width'];
 		}
 		
 		// make sure we're not exceeding our image size if we're not supposed to
