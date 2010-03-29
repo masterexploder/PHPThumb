@@ -161,7 +161,7 @@ abstract class ThumbBase
 			return;
 		}
 		
-		if (preg_match('/https?:\/\//', $this->fileName) !== false)
+		if (preg_match('/https?:\/\//', $this->fileName) !== 0)
 		{
 			$this->remoteImage = true;
 			return;
