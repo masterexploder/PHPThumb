@@ -329,7 +329,289 @@ class GdThumb extends ThumbBase
 		
 		return $this;
 	}
-	
+
+
+	/**
+	 * Adaptively Resizes the Image and Crops Using a Percentage
+	 *
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
+	 * remaining overflow using a provided percentage to get the image to be the size specified.
+	 *
+	 * The percentage mean different things depending on the orientation of the original image.
+	 *
+	 * For Landscape images:
+	 * ---------------------
+	 *
+	 * A percentage of 1 would crop the image all the way to the left, which would be the same as
+	 * using adaptiveResizeQuadrant() with $quadrant = 'L'
+	 *
+	 * A percentage of 50 would crop the image to the center which would be the same as using
+	 * adaptiveResizeQuadrant() with $quadrant = 'C', or even the original adaptiveResize()
+	 *
+	 * A percentage of 100 would crop the image to the image all the way to the right, etc, etc.
+	 * Note that you can use any percentage between 1 and 100.
+	 *
+	 * For Portrait images:
+	 * --------------------
+	 *
+	 * This works the same as for Landscape images except that a percentage of 1 means top and 100 means bottom
+	 *
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 * @param int $percent
+	 * @return GdThumb
+	 */
+	public function adaptiveResizePercent ($width, $height, $percent = 50)
+	{
+		// make sure our arguments are valid
+		if (!is_numeric($width) || $width  == 0)
+		{
+			throw new InvalidArgumentException('$width must be numeric and greater than zero');
+		}
+
+		if (!is_numeric($height) || $height == 0)
+		{
+			throw new InvalidArgumentException('$height must be numeric and greater than zero');
+		}
+
+		// make sure we're not exceeding our image size if we're not supposed to
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+
+		$this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
+
+		// resize the image to be close to our desired dimensions
+		$this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+
+		// reset the max dimensions...
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+
+		// create the working image
+		if (function_exists('imagecreatetruecolor'))
+		{
+			$this->workingImage = imagecreatetruecolor($this->maxWidth, $this->maxHeight);
+		}
+		else
+		{
+			$this->workingImage = imagecreate($this->maxWidth, $this->maxHeight);
+		}
+
+		$this->preserveAlpha();
+
+		$cropWidth	= $this->maxWidth;
+		$cropHeight	= $this->maxHeight;
+		$cropX 		= 0;
+		$cropY 		= 0;
+
+		// Crop the rest of the image using the quadrant
+
+		if ($percent > 100) {
+		    $percent = 100;
+		} elseif ($percent < 1) {
+		    $percent = 1;
+		}
+
+		if ($this->currentDimensions['width'] > $this->maxWidth)
+		{
+		    // Image is landscape
+		    $maxCropX = $this->currentDimensions['width'] - $this->maxWidth;
+		    $cropX = intval(($percent / 100) * $maxCropX);
+
+		} elseif ($this->currentDimensions['height'] > $this->maxHeight)
+		{
+		    // Image is portrait
+		    $maxCropY = $this->currentDimensions['height'] - $this->maxHeight;
+		    $cropY = intval(($percent / 100) * $maxCropY);
+
+		}
+
+		imagecopyresampled
+		(
+            $this->workingImage,
+            $this->oldImage,
+            0,
+            0,
+            $cropX,
+            $cropY,
+            $cropWidth,
+            $cropHeight,
+            $cropWidth,
+            $cropHeight
+		);
+
+		// update all the variables and resources to be correct
+		$this->oldImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $this->maxWidth;
+		$this->currentDimensions['height'] 	= $this->maxHeight;
+
+		return $this;
+	}
+	/**
+	 * Adaptively Resizes the Image and Crops Using a Quadrant
+	 *
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the
+	 * remaining overflow using the quadrant to get the image to be the size specified.
+	 *
+	 * The quadrants available are Top, Bottom, Center, Left, and Right:
+	 *
+	 *
+	 * +---+---+---+
+	 * |   | T |   |
+	 * +---+---+---+
+	 * | L | C | R |
+	 * +---+---+---+
+	 * |   | B |   |
+	 * +---+---+---+
+	 *
+	 * Note that if your image is Landscape and you choose either of the Top or Bottom quadrants (which won't
+	 * make sence since only the Left and Right would be available, then the Center quadrant will be used
+	 * to crop. This would have exactly the same result as using adaptiveResize().
+	 * The same goes if your image is portrait and you choose either the Left or Right quadrants.
+	 *
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 * @param string $quadrant T, B, C, L, R
+	 * @return GdThumb
+	 */
+	public function adaptiveResizeQuadrant ($width, $height, $quadrant = 'C')
+	{
+		// make sure our arguments are valid
+		if (!is_numeric($width) || $width  == 0)
+		{
+			throw new InvalidArgumentException('$width must be numeric and greater than zero');
+		}
+
+		if (!is_numeric($height) || $height == 0)
+		{
+			throw new InvalidArgumentException('$height must be numeric and greater than zero');
+		}
+
+		// make sure we're not exceeding our image size if we're not supposed to
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+
+		$this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
+
+		// resize the image to be close to our desired dimensions
+		$this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+
+		// reset the max dimensions...
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+
+		// create the working image
+		if (function_exists('imagecreatetruecolor'))
+		{
+			$this->workingImage = imagecreatetruecolor($this->maxWidth, $this->maxHeight);
+		}
+		else
+		{
+			$this->workingImage = imagecreate($this->maxWidth, $this->maxHeight);
+		}
+
+		$this->preserveAlpha();
+
+		$cropWidth	= $this->maxWidth;
+		$cropHeight	= $this->maxHeight;
+		$cropX 		= 0;
+		$cropY 		= 0;
+
+		// Crop the rest of the image using the quadrant
+
+		if ($this->currentDimensions['width'] > $this->maxWidth)
+		{
+		    // Image is landscape
+		    switch ($quadrant) {
+		        case 'L':
+		            $cropX = 0;
+		            break;
+
+		        case 'R':
+		            $cropX = intval(($this->currentDimensions['width'] - $this->maxWidth));
+		            break;
+
+		        case 'C':
+		        default:
+		            $cropX = intval(($this->currentDimensions['width'] - $this->maxWidth) / 2);
+		            break;
+		    }
+
+
+		} elseif ($this->currentDimensions['height'] > $this->maxHeight)
+		{
+		    // Image is portrait
+			switch ($quadrant) {
+		        case 'T':
+		            $cropY = 0;
+		            break;
+
+		        case 'B':
+		            $cropY = intval(($this->currentDimensions['height'] - $this->maxHeight));
+		            break;
+
+		        case 'C':
+		        default:
+		            $cropY = intval(($this->currentDimensions['height'] - $this->maxHeight) / 2);
+		            break;
+		    }
+
+		}
+
+		imagecopyresampled
+		(
+            $this->workingImage,
+            $this->oldImage,
+            0,
+            0,
+            $cropX,
+            $cropY,
+            $cropWidth,
+            $cropHeight,
+            $cropWidth,
+            $cropHeight
+		);
+
+		// update all the variables and resources to be correct
+		$this->oldImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $this->maxWidth;
+		$this->currentDimensions['height'] 	= $this->maxHeight;
+
+		return $this;
+	}
+
 	/**
 	 * Resizes an image by a given percent uniformly
 	 * 
