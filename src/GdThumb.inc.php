@@ -113,6 +113,14 @@ class GdThumb extends ThumbBase
 			case 'PNG':
 				$this->oldImage = imagecreatefrompng($this->fileName);
 				break;
+			case 'BMP':
+				$this->oldImage = Bmp::imagecreatefrombmp($this->fileName);
+				$this->format = 'JPG';
+				break;
+			case 'TIFF':
+				$this->oldImage = $this->imagecreatefromtiff($this->fileName);
+				$this->format = 'JPG';
+				break;
 			case 'STRING':
 				$this->oldImage = imagecreatefromstring($this->fileName);
 				break;
@@ -1385,6 +1393,14 @@ class GdThumb extends ThumbBase
 			case 'image/png':
 				$this->format = 'PNG';
 				break;
+			case 'image/x-ms-bmp':
+				$this->format = 'BMP';
+				break;
+			case 'image/tiff':
+				if( $this->supports_image_magick() ) {
+					$this->format = 'TIFF';
+					break;
+				}
 			default:
 				$this->triggerError('Image format not supported: ' . $mimeType);
 		}

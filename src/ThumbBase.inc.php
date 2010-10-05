@@ -107,6 +107,8 @@ abstract class ThumbBase
 		$this->remoteImage			= false;
 		$this->isDataStream			= $isDataStream;
 		
+		$this->hasImageMagick		= $this->supports_image_magick();
+		
 		$this->fileExistsAndReadable();
 	}
 	
@@ -319,5 +321,23 @@ abstract class ThumbBase
 		$this->hasError = $hasError;
 	} 
 	
+	public function imagecreatefromtiff( $image_path ) {
+		
+		//check if imagemagick is installed
+		$to_file = sys_get_temp_dir() . '/' . md5_file( $image_path ) . '.jpg';
+		exec( "convert $image_path $to_file", $returns );
+		
+		if( file_exists( $to_file ) ) {
+			return imagecreatefromjpeg( $to_file );
+		}
+		
+		return null;
+		
+	}
+	
+	function supports_image_magick() {
+		exec("convert -version", $out, $rcode); //Try to get ImageMagick "convert" program version number.
+		return $rcode === 0;
+	}
 
 }
