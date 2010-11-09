@@ -23,7 +23,7 @@
  */
 
 /**
- * GD Reflection Lib Plugin
+ * GD Tile Lib Plugin
  *
  * This plugin allows you to create a tiled version of your image
  *
