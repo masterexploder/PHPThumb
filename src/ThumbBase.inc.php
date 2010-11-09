@@ -257,6 +257,16 @@ abstract class ThumbBase
 	}
 	
 	/**
+	 * Returns whether or not the Image is $remoteImage
+	 *
+	 * @see ThumbBase::$remoteImage
+	 */
+	public function isRemoteImage ()
+	{
+		return $this->remoteImage;
+	}
+	
+	/**
 	 * Returns $fileName.
 	 *
 	 * @see ThumbBase::$fileName
