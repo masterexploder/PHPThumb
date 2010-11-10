@@ -25,7 +25,7 @@
 
 require_once '../ThumbLib.inc.php';
 
-$thumb = PhpThumbFactory::create('test_2.jpg');
+$thumb = PhpThumbFactory::create('test.jpg');
 $thumb->adaptiveResize(250, 250)->createTiles(4,4, './tiles');
 $thumb->showTiles();
 
