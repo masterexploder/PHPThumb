@@ -82,40 +82,41 @@ class GdTileLib
 				$image = imagecreatetruecolor($actTileWidth, $actTileHeight);
 				ImageCopy ( $image, $this->newImage , 0 , 0 , $xStart , $yStart , $tileWidth , $tileHeight );
 
-				$tileKey = $x .'_'. $y;
-				$this->tiles[$tileKey] = $image;
+				$this->tiles[$y][$x] = $image;
 			}
 		}
 			
 		$this->saveTiles();
 		return $that;
 	}
-
-	public function showTiles(){
+	
+	public function getTiles(){
 		$format = $this->parentInstance->getFormat();
 		$fileName = basename($this->parentInstance->getFileName());
-		$parentDir = dirname($this->parentInstance->getFileName());
 		
+		$tileNames = array();
 		for($y = 0; $y < $this->yTiles; $y++){
 			for($x = 0; $x < $this->xTiles; $x++){
-				$tileKey = $x .'_'. $y;
+				$tileName = $x .'_'. $y;
+				$image = null;
 				switch ($format)
 				{
 					case 'GIF':
-						echo '<img src="'.$this->tilesDir.'/' . preg_replace('/\.gif/i', '', $fileName) . '_' .$tileKey . '.gif">' ;
+						$image = $this->tilesDir.'/' . preg_replace('/\.gif/i', '', $fileName) . '_' .$tileName . '.gif';
 						break;
 					case 'JPG':
-						echo '<img src="'.$this->tilesDir.'/' . preg_replace('/\.jpg/i', '', $fileName) . '_' .$tileKey . '.jpg">' ;
+						$image = $this->tilesDir.'/' . preg_replace('/\.jpg/i', '', $fileName) . '_' .$tileName . '.jpg';
 						break;
 					case 'PNG':
-						echo '<img src="'.$this->tilesDir.'/' . preg_replace('/\.png/i', '', $fileName) . '_' .$tileKey . '.png">' ;
+						$image = $this->tilesDir.'/' . preg_replace('/\.png/i', '', $fileName) . '_' .$tileName . '.png';
 						break;
 				}
+			$tileNames[$x][$y] = $image;
 			}
-			echo "<br>";
 		}
+		return $tileNames;
 	}
-
+	
 	private function saveTiles(){
 		
 		$format = $this->parentInstance->getFormat();
@@ -155,7 +156,10 @@ class GdTileLib
 			mkdir($this->tilesDir);	
 		}
 		
-		foreach ($this->tiles as $tilename => $tile){
+		for($y = 0; $y < $this->yTiles; $y++){
+			for($x = 0; $x < $this->xTiles; $x++){
+			$tilename = $y . '_' .$x;
+			$tile = $this->tiles[$y][$x];
 			switch ($format)
 			{
 				case 'GIF':
@@ -169,6 +173,7 @@ class GdTileLib
 					imagepng($tile, $this->tilesDir . "/" . preg_replace('/\.png/i', '', $fileName) . '_' .$tilename . '.png');
 					break;
 			}
+		}
 		}
 	}
 }

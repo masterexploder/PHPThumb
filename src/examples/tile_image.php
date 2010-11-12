@@ -27,6 +27,16 @@ require_once '../ThumbLib.inc.php';
 
 $thumb = PhpThumbFactory::create('test.jpg');
 $thumb->adaptiveResize(250, 250)->createTiles(4,4, './tiles');
-$thumb->showTiles();
+
+$tiles = $thumb->getTiles();
+$tiledImage = null;
+for($x = 0; $x < count($tiles); $x++){
+	for($y = 0; $y < count($tiles[$x]); $y++){
+		$tiledImage .= '<img src="'.$tiles[$x][$y].'">';			
+	}
+	$tiledImage .= '<br>';
+}
+
+echo $tiledImage;
 
 ?>
