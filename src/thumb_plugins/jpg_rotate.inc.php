@@ -11,7 +11,6 @@
  *
  * @package PhpThumb 
  * @version 1.0
- * @copyright AFTDesign
  * @author Nikita E. Korotkih <nikitez@bk.ru>
  * @license PHP Version 5.0
  */
