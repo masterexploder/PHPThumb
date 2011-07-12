@@ -840,6 +840,31 @@ class GdThumb extends ThumbBase
 	}
 	
 	/**
+	 * Applies a filter to the image
+	 * 
+	 * @param int $filter
+	 * @return GdThumb
+	 */
+	public function imageFilter ($filter, $arg1 = false, $arg2 = false, $arg3 = false, $arg4 = false)
+	{
+		if (!is_numeric($filter))
+		{
+			throw new InvalidArgumentException('$filter must be numeric');
+		}
+		
+		if (!function_exists('imagefilter'))
+		{
+			throw new RuntimeException('Your version of GD does not support image filters.');
+		}
+		
+		imagefilter($this->oldImage, $filter, $arg1, $arg2, $arg3, $arg4);
+		
+		$this->workingImage = $this->oldImage;
+		
+		return $this;
+	}
+	
+	/**
 	 * Shows an image
 	 * 
 	 * This function will show the current image by first sending the appropriate header
