@@ -857,7 +857,17 @@ class GdThumb extends ThumbBase
 			throw new RuntimeException('Your version of GD does not support image filters.');
 		}
 		
-		imagefilter($this->oldImage, $filter, $arg1, $arg2, $arg3, $arg4);
+		$result = false;
+		if ( $arg1 === false ) $result = imagefilter($this->oldImage, $filter);
+		else if ( $arg2 === false ) $result = imagefilter($this->oldImage, $filter, $arg1);
+		else if ( $arg3 === false ) $result = imagefilter($this->oldImage, $filter, $arg1, $arg2);
+		else if ( $arg4 === false ) $result = imagefilter($this->oldImage, $filter, $arg1, $arg2, $arg3);
+		else $result = imagefilter($this->oldImage, $filter, $arg1, $arg2, $arg3, $arg4);
+		
+		if (!$result)
+		{
+			throw new RuntimeException('GD imagefilter failed');
+		}
 		
 		$this->workingImage = $this->oldImage;
 		
