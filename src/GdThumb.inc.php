@@ -619,6 +619,122 @@ class GdThumb extends ThumbBase
 
 		return $this;
 	}
+	/**
+	 * Adaptively Resizes the Image
+	 * 
+	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the 
+	 * remaining overflow (from the center) to get the image to be the size specified
+	 * 
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 * @return GdThumb
+	 */
+	public function adaptiveResizeFromPoint ($width, $height, $x, $y)
+	{
+
+		// make sure our arguments are valid
+		if (!is_numeric($width) || $width  == 0)
+		{
+			//throw new InvalidArgumentException('$width must be numeric and greater than zero');
+		}
+		
+		if (!is_numeric($height) || $height == 0)
+		{
+			//throw new InvalidArgumentException('$height must be numeric and greater than zero');
+		}
+		
+		// make sure we're not exceeding our image size if we're not supposed to
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+		
+		$this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
+		
+		// resize the image to be close to our desired dimensions
+		$this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+		
+		// reset the max dimensions...
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+		
+		// create the working image
+		if (function_exists('imagecreatetruecolor'))
+		{
+			$this->workingImage = imagecreatetruecolor($this->maxWidth, $this->maxHeight);
+		}
+		else
+		{
+			$this->workingImage = imagecreate($this->maxWidth, $this->maxHeight);
+		}
+		
+		$this->preserveAlpha();
+		
+		$cropWidth	= $this->maxWidth;
+		$cropHeight	= $this->maxHeight;
+		$cropX 		= 0;
+		$cropY 		= 0;
+		
+		// now, figure out how to crop the rest of the image...
+		if ($this->currentDimensions['width'] > $this->maxWidth)
+		{
+			if( $x == 'center' )
+				$cropX = intval(($this->currentDimensions['width'] - $this->maxWidth) / 2);
+			
+			elseif( $x == 'left' )
+				$cropX = 0;
+			
+			elseif( $x == 'right' )
+				$cropX = intval(($this->currentDimensions['width'] - $this->maxWidth));
+		}
+		elseif ($this->currentDimensions['height'] > $this->maxHeight)
+		{
+			if( $y == 'center' )
+				$cropY = intval(($this->currentDimensions['height'] - $this->maxHeight) / 2);
+			
+			elseif( $y == 'top' )
+				$cropY = 0;
+			
+			elseif( $y == 'bottom' )
+				$cropY = intval(($this->currentDimensions['height'] - $this->maxHeight));
+		}
+		
+		imagecopyresampled
+		(
+            $this->workingImage,
+            $this->oldImage,
+            0,
+            0,
+            $cropX,
+            $cropY,
+            $cropWidth,
+            $cropHeight,
+            $cropWidth,
+            $cropHeight
+		);
+		
+		// update all the variables and resources to be correct
+		$this->oldImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $this->maxWidth;
+		$this->currentDimensions['height'] 	= $this->maxHeight;
+		
+		return $this;
+	}
+	
 
 	/**
 	 * Resizes an image by a given percent uniformly
