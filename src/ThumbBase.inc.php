@@ -336,8 +336,13 @@ abstract class ThumbBase
 	}
 	
 	function supports_image_magick() {
-		exec("convert -version", $out, $rcode); //Try to get ImageMagick "convert" program version number.
-		return $rcode === 0;
+		
+		if( function_exists( 'exec' ) {
+			exec("convert -version", $out, $rcode); //Try to get ImageMagick "convert" program version number.
+			return $rcode === 0;
+		}
+		
+		return false;
 	}
 
 }
