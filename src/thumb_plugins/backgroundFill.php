@@ -174,21 +174,16 @@ class BackgroundFillLib
 		$g = ($rgb >> 8) & 0xFF;
 		$b = $rgb & 0xFF;
 		
-		return ( (string) $r ) . ( (string) $g ) . ( (string) $b );
+		return "{$r}{$g}{$b}";
     }
     
-    function roundRGB( $rgb, $tolerance = 4 ) {
+    function roundRGB( $rgb ) {
     	
     	$r = substr( $rgb, 0, 3 );
 	   	$g = substr( $rgb, 3, 3 );    	
     	$b = substr( $rgb, 6, 3 );
-    	
-    	//$r = ceil($r / $tolerance) * $tolerance;
-      	//$g = ceil($g / $tolerance) * $tolerance;
-    	//$b = ceil($b / $tolerance) * $tolerance;
 
     	return "{$r}{$g}{$b}";
-    	
     }
 }
 
