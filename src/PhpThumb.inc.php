@@ -42,6 +42,9 @@
  * @package PhpThumb
  * @subpackage Core
  */
+ 
+require_once 'BMP.php';
+ 
 class PhpThumb
 {
 	/**
