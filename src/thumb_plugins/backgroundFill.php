@@ -24,6 +24,10 @@ class BackgroundFillLib
 		
 		$this->newImage = imagecreatetruecolor($width, $height);
 		
+		// This is needed to support alpha
+		imagesavealpha($this->newImage, true);
+		imagealphablending( $this->newImage, false );
+		
 		//check if we are padding vertical / horizontally
 		if( $this->currentDimensions['width'] != $width ) {
 		
@@ -40,16 +44,15 @@ class BackgroundFillLib
 			$left_color = key( $left_color );
 			$right_color = key( $right_color );	
 
-			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($left_color, 0, 3),substr($left_color, 3, 3),substr($left_color, 6, 3),0);
-			
+			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($left_color, 0, 3),substr($left_color, 3, 3),substr($left_color, 6, 3),substr($left_color, 9, 3));
+
 			// Fill left color
 	        imagefilledrectangle($this->newImage,0,0,$offsetLeft+5,$height,$colorToPaint);
-	        
-			
-			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($right_color, 0, 3),substr($right_color, 3, 3),substr($right_color, 6, 3),0);
+	        			
+			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($right_color, 0, 3),substr($right_color, 3, 3),substr($right_color, 6, 3),substr($left_color, 9, 3));
 			// Fill right color
 	        imagefilledrectangle($this->newImage,$offsetLeft+$this->currentDimensions['width']-5,0,$width,$height,$colorToPaint);
-			
+	        
 		} elseif( $this->currentDimensions['height'] != $height ) {
 		
 			//Pad top / bottom
@@ -65,18 +68,18 @@ class BackgroundFillLib
 			$top_color = key( $top_color );
 			$bottom_color = key( $bottom_color );	
 
-			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($top_color, 0, 3),substr($top_color, 3, 3),substr($top_color, 6, 3),0);
+			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($top_color, 0, 3),substr($top_color, 3, 3),substr($top_color, 6, 3),substr($left_color, 9, 3));
 			
 			// Fill left color
 	        imagefilledrectangle($this->newImage,0,0,$width,$offsetTop+5,$colorToPaint);
 	        
 			
-			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($bottom_color, 0, 3),substr($bottom_color, 3, 3),substr($bottom_color, 6, 3),0);
+			$colorToPaint = imagecolorallocatealpha($this->newImage,substr($bottom_color, 0, 3),substr($bottom_color, 3, 3),substr($bottom_color, 6, 3),substr($left_color, 9, 3));
 			// Fill right color
 	        imagefilledrectangle($this->newImage,0,$offsetTop-5+$this->currentDimensions['height'],$width,$height,$colorToPaint);
 
 		}
-
+		
 		imagecopy($this->newImage, $this->workingImage, $offsetLeft, $offsetTop, 0, 0, $this->currentDimensions['width'], $this->currentDimensions['height']);
 		
 		$this->parentInstance->setOldImage($this->newImage);
@@ -151,7 +154,7 @@ class BackgroundFillLib
 		if( $x_1 == $x_2 ) {
 			
 			while( $y_1 < $y_2 ) {
-				$colors[] = $this->roundRGB( $this->colorAtToRGB( imagecolorat( $resource, $x_1, $y_1 ) ) );
+				$colors[] = $this->colorAtToRGBA( imagecolorat( $resource, $x_1, $y_1 ), $resource );
 				$y_1++;
 			}
 			
@@ -160,7 +163,7 @@ class BackgroundFillLib
 		//horizontal
 		elseif( $y_1 == $y_2 ) {
 			while( $x_1 < $x_2 ) {
-				$colors[] = $this->roundRGB( $this->colorAtToRGB( imagecolorat( $resource, $x_1, $y_1 ) ) );
+				$colors[] = $this->colorAtToRGBA( imagecolorat( $resource, $x_1, $y_1 ), $resource );
 				$x_1++;
 			}
 		}
@@ -169,21 +172,16 @@ class BackgroundFillLib
 	
 	}
     
-    function colorAtToRGB( $rgb ) {
-    	$r = ($rgb >> 16) & 0xFF;
-		$g = ($rgb >> 8) & 0xFF;
-		$b = $rgb & 0xFF;
-		
-		return "{$r}{$g}{$b}";
-    }
-    
-    function roundRGB( $rgb ) {
-    	
-    	$r = substr( $rgb, 0, 3 );
-	   	$g = substr( $rgb, 3, 3 );    	
-    	$b = substr( $rgb, 6, 3 );
+    function colorAtToRGBA( $rgba, $resource ) {
 
-    	return "{$r}{$g}{$b}";
+		$colors = imagecolorsforindex($resource, $rgba);
+
+		$colors['red'] 		= str_pad( (string) $colors['red'], 3, '0', STR_PAD_LEFT );
+		$colors['green'] 	= str_pad( (string) $colors['green'], 3, '0', STR_PAD_LEFT );
+		$colors['blue']		= str_pad( (string) $colors['blue'], 3, '0', STR_PAD_LEFT );
+		$colors['alpha'] 	= str_pad( (string) $colors['alpha'], 3, '0', STR_PAD_LEFT );
+		
+		return "{$colors['red']}{$colors['green']}{$colors['blue']}{$colors['alpha']}";
     }
 }
 
