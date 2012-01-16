@@ -151,7 +151,7 @@ class GdThumb extends ThumbBase
 	##############################
     
     /**
-    * Fill an image to desired dimensions if required
+    * Pad an image to desired dimensions if required
     * 
     * Moves the image into the center and fills the rest with $color
     * 
@@ -161,7 +161,7 @@ class GdThumb extends ThumbBase
     * @param mixed $height
     * @param mixed $color
     */
-    public function fill ($width, $height, $color=array(255, 255, 255))
+    public function pad ($width, $height, $color=array(255, 255, 255))
     {
         // no resize - woohoo!
         if($width == $this->currentDimensions['width'] && $height == $this->currentDimensions['height']){
