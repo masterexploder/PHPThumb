@@ -149,6 +149,73 @@ class GdThumb extends ThumbBase
 	##############################
 	# ----- API FUNCTIONS ------ #
 	##############################
+    
+    /**
+    * Pad an image to desired dimensions if required
+    * 
+    * Moves the image into the center and fills the rest with $color
+    * 
+    * Author: Blake Kus <http://blakek.us>
+    * 
+    * @param mixed $width
+    * @param mixed $height
+    * @param mixed $color
+    */
+    public function pad ($width, $height, $color=array(255, 255, 255))
+    {
+        // no resize - woohoo!
+        if($width == $this->currentDimensions['width'] && $height == $this->currentDimensions['height']){
+            return $this;
+        }
+        
+        // create the working image
+        if (function_exists('imagecreatetruecolor'))
+        {
+            $this->workingImage = imagecreatetruecolor($width, $height);
+        }
+        else
+        {
+            $this->workingImage = imagecreate($width, $height);
+        }
+        
+        // create the fill color
+        $fillColor = imagecolorallocate(
+            $this->workingImage,
+            $color[0],
+            $color[1],
+            $color[2]
+        );
+        
+        // fill our working image with the fill color
+        imagefill(
+            $this->workingImage,
+            0,
+            0,
+            $fillColor
+        );
+        
+        // copy the image into the center of our working image
+        imagecopyresampled
+        (
+            $this->workingImage,
+            $this->oldImage,
+            intval(($width-$this->currentDimensions['width'])/2),
+            intval(($height-$this->currentDimensions['height'])/2),
+            0,
+            0,
+            $this->currentDimensions['width'],
+            $this->currentDimensions['height'],
+            $this->currentDimensions['width'],
+            $this->currentDimensions['height']
+        );
+        
+        // update all the variables and resources to be correct
+        $this->oldImage                     = $this->workingImage;
+        $this->currentDimensions['width']   = $width;
+        $this->currentDimensions['height']  = $height;
+        
+        return $this;
+    }
 	
 	/**
 	 * Resizes an image to be no larger than $maxWidth or $maxHeight
