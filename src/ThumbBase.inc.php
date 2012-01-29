@@ -325,7 +325,7 @@ abstract class ThumbBase
 		
 		//check if imagemagick is installed
 		$to_file = sys_get_temp_dir() . '/' . md5_file( $image_path ) . '.jpg';
-		exec( "convert $image_path $to_file", $returns );
+		exec( "convert $image_path $to_file 2>/dev/null", $returns );
 		
 		if( file_exists( $to_file ) ) {
 			return imagecreatefromjpeg( $to_file );
@@ -338,7 +338,7 @@ abstract class ThumbBase
 	function supports_image_magick() {
 		
 		if( function_exists( 'exec' ) ) {
-			exec("convert -version", $out, $rcode); //Try to get ImageMagick "convert" program version number.
+			exec("convert -version 2>/dev/null", $out, $rcode); //Try to get ImageMagick "convert" program version number.
 			return $rcode === 0;
 		}
 		
