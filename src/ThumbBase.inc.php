@@ -334,6 +334,42 @@ abstract class ThumbBase
 		return null;
 		
 	}
+
+	/**
+	 * We abstract this to try and handle large images (use image magick if available).
+	 *
+	 * @param object $hasError
+	 * @see ThumbBase::$hasError
+	 */
+	public function imagecreatefromjpeg( $fileName ) {
+
+		if ( $this->hasEnoughMemoryToLoadImage( $fileName ) )
+			return imagecreatefromjpeg( $fileName );
+
+		if ( $this->supports_image_magick() ) {
+
+			$new_name = preg_replace( '~\.jp(e)?g$~' , '-resized.jpg', $fileName);
+
+			$this->execute_imagemagick_command( "convert '$fileName' -resize 2500x2500 '$new_name'" );
+
+			if ( file_exists( $new_name ) && $this->hasEnoughMemoryToLoadImage( $new_name ) )
+				return imagecreatefromjpeg( $new_name );
+
+		}
+
+		$this->triggerError('Image is too large: ' . $this->fileName);
+
+	}
+
+	public function hasEnoughMemoryToLoadImage( $fileName ) {
+
+		$imageInfo = getimagesize( $fileName );
+		$memoryNeeded = round(($imageInfo[0] * $imageInfo[1] * $imageInfo['bits'] * $imageInfo['channels'] / 8 + Pow(2, 16)) * 1.65);
+   		
+   		$failed = memory_get_usage() + $memoryNeeded < (integer) @ini_get('memory_limit') * pow(1024, 2);
+
+   		return $failed;
+	}
 	
 	function supports_image_magick() {
 		
@@ -343,6 +379,13 @@ abstract class ThumbBase
 		}
 		
 		return false;
+	}
+
+	public function execute_imagemagick_command($command) {
+
+		exec( $command, $returns );
+
+		return $returns;
 	}
 
 }

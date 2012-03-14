@@ -108,7 +108,7 @@ class GdThumb extends ThumbBase
 				$this->oldImage = imagecreatefromgif($this->fileName);
 				break;
 			case 'JPG':
-				$this->oldImage = imagecreatefromjpeg($this->fileName);
+				$this->oldImage = $this->imagecreatefromjpeg($this->fileName);
 				break;
 			case 'PNG':
 				$this->oldImage = imagecreatefrompng($this->fileName);
