@@ -922,8 +922,14 @@ class GdThumb extends ThumbBase
 		{
 			throw new RuntimeException('Cannot show image, headers have already been sent');
 		}
-		
-		switch ($this->format) 
+
+		// When the interlace option equals true or false call imageinterlace else leave it to default
+		if ($this->options['interlace'] === true)
+			imageinterlace($this->oldImage, 1);
+		elseif ($this->options['interlace'] === false)
+			imageinterlace($this->oldImage, 0);
+
+		switch ($this->format)
 		{
 			case 'GIF':
 				if ($rawData === false) 
@@ -1017,7 +1023,13 @@ class GdThumb extends ThumbBase
 			}
 		}
 		
-		switch ($format) 
+		// When the interlace option equals true or false call imageinterlace else leave it to default
+		if ($this->options['interlace'] === true)
+			imageinterlace($this->oldImage, 1);
+		elseif ($this->options['interlace'] === false)
+			imageinterlace($this->oldImage, 0);
+
+		switch ($format)
 		{
 			case 'GIF':
 				imagegif($this->oldImage, $fileName);
@@ -1067,7 +1079,8 @@ class GdThumb extends ThumbBase
 				'preserveAlpha'			=> true,
 				'alphaMaskColor'		=> array (255, 255, 255),
 				'preserveTransparency'	=> true,
-				'transparencyMaskColor'	=> array (0, 0, 0)
+				'transparencyMaskColor'	=> array (0, 0, 0),
+				'interlace'             => true
 			);
 		}
 		// otherwise, let's use what we've got already
