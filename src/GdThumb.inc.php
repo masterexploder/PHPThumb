@@ -1080,7 +1080,7 @@ class GdThumb extends ThumbBase
 				'alphaMaskColor'		=> array (255, 255, 255),
 				'preserveTransparency'	=> true,
 				'transparencyMaskColor'	=> array (0, 0, 0),
-				'interlace'             => true
+				'interlace'             => null
 			);
 		}
 		// otherwise, let's use what we've got already
