@@ -94,7 +94,7 @@ class BackgroundFillLib {
 		// Check if we are padding vertically or horizontally
 		if ( $this->currentDimensions['width'] != $width ) {
 
-			$colorToPaint = imagecolorallocatealpha( $this->newImage,substr( $colors['left'], 0, 3), substr( $colors['left'], 3, 3 ), substr( $colors['left'], 6, 3 ), substr( $colors['left'], 9, 3 ) );
+			$colorToPaint = imagecolorallocatealpha( $this->newImage, substr( $colors['left'], 0, 3 ), substr( $colors['left'], 3, 3 ), substr( $colors['left'], 6, 3 ), substr( $colors['left'], 9, 3 ) );
 
 			// Fill left color
 	        imagefilledrectangle( $this->newImage, 0, 0, $offsetLeft + 5, $height, $colorToPaint );
