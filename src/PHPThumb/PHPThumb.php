@@ -3,14 +3,9 @@
 namespace PHPThumb;
 
 /**
- * PhpThumb Library Definition File
+ * PhpThumb Base Class Definition File
  * 
- * This file contains the definitions for the PhpThumbFactory class.
- * It also includes the other required base class files.
- * 
- * If you've got some auto-loading magic going on elsewhere in your code, feel free to
- * remove the include_once statements at the beginning of this file... just make sure that
- * these files get included one way or another in your code.
+ * This file contains the definition for the ThumbBase object
  * 
  * PHP Version 5 with GD 2.0+
  * PhpThumb : PHP Thumb Library <http://phpthumb.gxdlabs.com>
@@ -30,74 +25,293 @@ namespace PHPThumb;
  * @filesource
  */
 
-
 /**
- * PhpThumbFactory Object
+ * ThumbBase Class Definition
  * 
- * This class is responsible for making sure everything is set up and initialized properly,
- * and returning the appropriate thumbnail class instance.  It is the only recommended way 
- * of using this library, and if you try and circumvent it, the sky will fall on your head :)
- * 
- * Basic use is easy enough.  First, make sure all the settings meet your needs and environment...
- * these are the static variables defined at the beginning of the class.
- * 
- * Once that's all set, usage is pretty easy.  You can simply do something like:
- * <code>$thumb = PhpThumbFactory::create('/path/to/file.png');</code>
- * 
- * Refer to the documentation for the create function for more information
+ * This is the base class that all implementations must extend.  It contains the 
+ * core variables and functionality common to all implementations, as well as the functions that 
+ * allow plugins to augment those classes.
  * 
  * @package PhpThumb
  * @subpackage Core
  */
-class PHPThumb
+abstract class PHPThumb
 {
 	/**
-	 * Factory Function
+	 * All imported objects
 	 * 
-	 * This function returns the correct thumbnail object, augmented with any appropriate plugins.  
-	 * It does so by doing the following:
-	 *  - Getting an instance of PhpThumb
-	 *  - Loading plugins
-	 *  - Validating the default implemenation
-	 *  - Returning the desired default implementation if possible
-	 *  - Returning the GD implemenation if the default isn't available
-	 *  - Throwing an exception if no required libraries are present
+	 * An array of imported plugin objects
 	 * 
-	 * @return GdThumb
-	 * @uses PhpThumb
-	 * @param string $filename The path and file to load [optional]
+	 * @var array
 	 */
-	public static function create ($filename = null, $options = array(), $isDataStream = false)
+	protected $imported;
+	
+	/**
+	 * All imported object functions
+	 * 
+	 * An array of all methods added to this class by imported plugin objects
+	 * 
+	 * @var array
+	 */
+	protected $importedFunctions;
+	
+	/**
+	 * The last error message raised
+	 * 
+	 * @var string
+	 */
+	protected $errorMessage;
+	
+	/**
+	 * Whether or not the current instance has any errors
+	 * 
+	 * @var bool
+	 */
+	protected $hasError;
+	
+	/**
+	 * The name of the file we're manipulating
+	 * 
+	 * This must include the path to the file (absolute paths recommended)
+	 * 
+	 * @var string
+	 */
+	protected $fileName;
+	
+	/**
+	 * What the file format is (mime-type)
+	 * 
+	 * @var string
+	 */
+	protected $format;
+	
+	/**
+	 * Whether or not the image is hosted remotely
+	 * 
+	 * @var bool
+	 */
+	protected $remoteImage;
+	
+	/**
+	 * Whether or not the current image is an actual file, or the raw file data
+	 *
+	 * By "raw file data" it's meant that we're actually passing the result of something
+	 * like file_get_contents() or perhaps from a database blob
+	 * 
+	 * @var bool
+	 */
+	protected $isDataStream;
+	
+	/**
+	 * An array of attached plugins to execute in order.
+	 * @var array
+	 */
+	protected $plugins;
+	
+	/**
+	 * Class constructor
+	 * 
+	 * @return ThumbBase
+	 */
+	public function __construct ($fileName, $isDataStream = false)
 	{
-		// map our implementation to their class names
-		$implementationMap = array
-		(
-			'imagick'	=> 'ImagickThumb',
-			'gd' 		=> 'GdThumb'
-		);
+		$this->imported				= array();
+		$this->importedFunctions	= array();
+		$this->errorMessage			= null;
+		$this->hasError				= false;
+		$this->fileName				= $fileName;
+		$this->remoteImage			= false;
+		$this->isDataStream			= $isDataStream;
 		
-		$toReturn = null;
-		$implementation = self::$defaultImplemenation;
-		
-		// attempt to load the default implementation
-		if ($pt->isValidImplementation(self::$defaultImplemenation))
-		{
-			$imp = $implementationMap[self::$defaultImplemenation];
-			$toReturn = new $imp($filename, $options, $isDataStream);
-		}
-		else if ($pt->isValidImplementation('gd'))
-		{
-			$imp = $implementationMap['gd'];
-			$implementation = 'gd';
-			$toReturn = new $imp($filename, $options, $isDataStream);
-		}
-		else
-		{
-			throw new Exception('You must have either the GD or iMagick extension loaded to use this library');
-		}
-		
-		$registry = $pt->getPluginRegistry($implementation);
-		$toReturn->importPlugins($registry);
-		return $toReturn;
+		$this->fileExistsAndReadable();
 	}
+	
+	/**
+	 * Imports plugins in $registry to the class
+	 * 
+	 * @param array $registry
+	 */
+	public function importPlugins ($registry)
+	{
+		foreach ($registry as $plugin => $meta)
+		{
+			$this->imports($plugin);
+		}
+	}
+	
+	/**
+	 * Imports a plugin
+	 * 
+	 * This is where all the plugins magic happens!  This function "loads" the plugin functions, making them available as 
+	 * methods on the class.
+	 * 
+	 * @param string $object The name of the object to import / "load"
+	 */
+	protected function imports ($object)
+	{
+		// the new object to import
+		$newImport 			= new $object();
+		// the name of the new object (class name)
+		$importName			= get_class($newImport);
+		// the new functions to import
+		$importFunctions 	= get_class_methods($newImport);
+		
+		// add the object to the registry
+		array_push($this->imported, array($importName, $newImport));
+		
+		// add the methods to the registry
+		foreach ($importFunctions as $key => $functionName)
+		{
+			$this->importedFunctions[$functionName] = &$newImport;
+		}
+	}
+	
+	/**
+	 * Checks to see if $this->fileName exists and is readable
+	 * 
+	 */
+	protected function fileExistsAndReadable ()
+	{
+		if ($this->isDataStream === true)
+		{
+			return;
+		}
+		
+		if (preg_match('/https?:\/\//', $this->fileName) !== 0)
+		{
+			$this->remoteImage = true;
+			return;
+		}
+		
+		if (!file_exists($this->fileName))
+		{
+			$this->triggerError('Image file not found: ' . $this->fileName);
+		}
+		elseif (!is_readable($this->fileName))
+		{
+			$this->triggerError('Image file not readable: ' . $this->fileName);
+		}
+	}
+	
+	/**
+	 * Sets $this->errorMessage to $errorMessage and throws an exception
+	 * 
+	 * Also sets $this->hasError to true, so even if the exceptions are caught, we don't
+	 * attempt to proceed with any other functions
+	 * 
+	 * @param string $errorMessage
+	 */
+	protected function triggerError ($errorMessage)
+	{
+		$this->hasError 	= true;
+		$this->errorMessage	= $errorMessage;
+		
+		throw new \Exception ($errorMessage);
+	}
+
+    /**
+     * Returns $imported.
+     * @see ThumbBase::$imported
+     * @return array
+     */
+    public function getImported ()
+    {
+        return $this->imported;
+    }
+    
+    /**
+     * Returns $importedFunctions.
+     * @see ThumbBase::$importedFunctions
+     * @return array
+     */
+    public function getImportedFunctions ()
+    {
+        return $this->importedFunctions;
+    }
+	
+	/**
+	 * Returns $errorMessage.
+	 *
+	 * @see ThumbBase::$errorMessage
+	 */
+	public function getErrorMessage ()
+	{
+		return $this->errorMessage;
+	}
+	
+	/**
+	 * Sets $errorMessage.
+	 *
+	 * @param object $errorMessage
+	 * @see ThumbBase::$errorMessage
+	 */
+	public function setErrorMessage ($errorMessage)
+	{
+		$this->errorMessage = $errorMessage;
+	}
+	
+	/**
+	 * Returns $fileName.
+	 *
+	 * @see ThumbBase::$fileName
+	 */
+	public function getFileName ()
+	{
+		return $this->fileName;
+	}
+	
+	/**
+	 * Sets $fileName.
+	 *
+	 * @param object $fileName
+	 * @see ThumbBase::$fileName
+	 */
+	public function setFileName ($fileName)
+	{
+		$this->fileName = $fileName;
+	}
+	
+	/**
+	 * Returns $format.
+	 *
+	 * @see ThumbBase::$format
+	 */
+	public function getFormat ()
+	{
+		return $this->format;
+	}
+	
+	/**
+	 * Sets $format.
+	 *
+	 * @param object $format
+	 * @see ThumbBase::$format
+	 */
+	public function setFormat ($format)
+	{
+		$this->format = $format;
+	}
+	
+	/**
+	 * Returns $hasError.
+	 *
+	 * @see ThumbBase::$hasError
+	 */
+	public function getHasError ()
+	{
+		return $this->hasError;
+	}
+	
+	/**
+	 * Sets $hasError.
+	 *
+	 * @param object $hasError
+	 * @see ThumbBase::$hasError
+	 */
+	public function setHasError ($hasError)
+	{
+		$this->hasError = $hasError;
+	} 
+	
+
 }

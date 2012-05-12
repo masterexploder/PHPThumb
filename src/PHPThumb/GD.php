@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPThumb\Implementations;
+namespace PHPThumb;
 
 /**
  * PhpThumb GD Thumb Class Definition File
@@ -25,7 +25,7 @@ namespace PHPThumb\Implementations;
  * @filesource
  */
 
-class GD extends \PHPThumb\PHPThumbBase
+class GD extends PHPThumb
 {
 	/**
 	 * The prior image (before manipulation)
@@ -124,10 +124,6 @@ class GD extends \PHPThumb\PHPThumbBase
 		// TODO: Port gatherImageMeta to a separate function that can be called to extract exif data
 	}
 	
-	/**
-	 * Class Destructor
-	 * 
-	 */
 	public function __destruct ()
 	{
 		if (is_resource($this->oldImage))
@@ -141,10 +137,6 @@ class GD extends \PHPThumb\PHPThumbBase
 		}
 	}
 	
-	##############################
-	# ----- API FUNCTIONS ------ #
-	##############################
-    
     /**
     * Pad an image to desired dimensions if required
     * 

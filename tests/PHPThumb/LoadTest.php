@@ -2,7 +2,7 @@
 
 namespace PHPThumb\Tests;
 
-use PHPThumb\Implementations\GD;
+use PHPThumb\GD;
 
 class LoadTest extends \PHPUnit_Framework_TestCase
 {

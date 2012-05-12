@@ -1,4 +1,7 @@
 <?php
+
+namespace PHPThumb\Plugins;
+
 /**
  * GD Reflection Lib Plugin Definition File
  * 
@@ -30,27 +33,22 @@
  * @package PhpThumb
  * @subpackage Plugins
  */
-class GdReflectionLib
+class Reflection implements \PHPThumb\ThumbPluginInterface
 {
-	/**
-	 * Instance of GdThumb passed to this class
-	 * 
-	 * @var GdThumb
-	 */
 	protected $parentInstance;
 	protected $currentDimensions;
 	protected $workingImage;
 	protected $newImage;
 	protected $options;
 	
-	public function createReflection ($percent, $reflection, $white, $border, $borderColor, &$that)
+	//public function createReflection ($percent, $reflection, $white, $border, $borderColor, &$that)
+	public function execute(\PHPThumb\GD $phpthumb, array $params = array())
 	{
 		// bring stuff from the parent class into this class...
-		$this->parentInstance 		= $that;
-		$this->currentDimensions 	= $this->parentInstance->getCurrentDimensions();
-		$this->workingImage			= $this->parentInstance->getWorkingImage();
-		$this->newImage				= $this->parentInstance->getOldImage();
-		$this->options				= $this->parentInstance->getOptions();
+		$this->currentDimensions 	= $phpthumb->getCurrentDimensions();
+		$this->workingImage			= $phpthumb->getWorkingImage();
+		$this->newImage				= $phpthumb->getOldImage();
+		$this->options				= $phpthumb->getOptions();
 		
 		$width				= $this->currentDimensions['width'];
 		$height				= $this->currentDimensions['height'];
@@ -103,7 +101,7 @@ class GdReflectionLib
             imageline($this->workingImage, $width-1, 0, $width-1, $height, $colorToPaint); //right line
         }
 		
-		if ($this->parentInstance->getFormat() == 'PNG')
+		if ($phpthumb->getFormat() == 'PNG')
 		{
 			$colorTransparent = imagecolorallocatealpha
 			(
@@ -118,10 +116,10 @@ class GdReflectionLib
 			imagesavealpha($this->workingImage, true);
 		}
 		
-		$this->parentInstance->setOldImage($this->workingImage);
+		$phpthumb->setOldImage($this->workingImage);
 		$this->currentDimensions['width'] 	= $width;
 		$this->currentDimensions['height']	= $newHeight;
-		$this->parentInstance->setCurrentDimensions($this->currentDimensions);
+		$phpthumb->setCurrentDimensions($this->currentDimensions);
 		
 		return $that;
 	}
@@ -175,6 +173,3 @@ class GdReflectionLib
         return ($asString ? "{$rgb[0]} {$rgb[1]} {$rgb[2]}" : $rgb);
     }
 }
-
-$pt = PhpThumb::getInstance();
-$pt->registerPlugin('GdReflectionLib', 'gd');
