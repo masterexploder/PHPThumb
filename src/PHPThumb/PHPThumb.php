@@ -93,16 +93,6 @@ abstract class PHPThumb
 	protected $remoteImage;
 	
 	/**
-	 * Whether or not the current image is an actual file, or the raw file data
-	 *
-	 * By "raw file data" it's meant that we're actually passing the result of something
-	 * like file_get_contents() or perhaps from a database blob
-	 * 
-	 * @var bool
-	 */
-	protected $isDataStream;
-	
-	/**
 	 * An array of attached plugins to execute in order.
 	 * @var array
 	 */
@@ -113,7 +103,7 @@ abstract class PHPThumb
 	 * 
 	 * @return ThumbBase
 	 */
-	public function __construct ($fileName, $isDataStream = false)
+	public function __construct($fileName)
 	{
 		$this->imported				= array();
 		$this->importedFunctions	= array();
@@ -121,49 +111,8 @@ abstract class PHPThumb
 		$this->hasError				= false;
 		$this->fileName				= $fileName;
 		$this->remoteImage			= false;
-		$this->isDataStream			= $isDataStream;
 		
 		$this->fileExistsAndReadable();
-	}
-	
-	/**
-	 * Imports plugins in $registry to the class
-	 * 
-	 * @param array $registry
-	 */
-	public function importPlugins ($registry)
-	{
-		foreach ($registry as $plugin => $meta)
-		{
-			$this->imports($plugin);
-		}
-	}
-	
-	/**
-	 * Imports a plugin
-	 * 
-	 * This is where all the plugins magic happens!  This function "loads" the plugin functions, making them available as 
-	 * methods on the class.
-	 * 
-	 * @param string $object The name of the object to import / "load"
-	 */
-	protected function imports ($object)
-	{
-		// the new object to import
-		$newImport 			= new $object();
-		// the name of the new object (class name)
-		$importName			= get_class($newImport);
-		// the new functions to import
-		$importFunctions 	= get_class_methods($newImport);
-		
-		// add the object to the registry
-		array_push($this->imported, array($importName, $newImport));
-		
-		// add the methods to the registry
-		foreach ($importFunctions as $key => $functionName)
-		{
-			$this->importedFunctions[$functionName] = &$newImport;
-		}
 	}
 	
 	/**
@@ -172,11 +121,6 @@ abstract class PHPThumb
 	 */
 	protected function fileExistsAndReadable ()
 	{
-		if ($this->isDataStream === true)
-		{
-			return;
-		}
-		
 		if (preg_match('/https?:\/\//', $this->fileName) !== 0)
 		{
 			$this->remoteImage = true;
