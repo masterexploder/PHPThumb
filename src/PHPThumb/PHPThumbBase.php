@@ -1,4 +1,7 @@
 <?php
+
+namespace PHPThumb;
+
 /**
  * PhpThumb Base Class Definition File
  * 
@@ -32,7 +35,7 @@
  * @package PhpThumb
  * @subpackage Core
  */
-abstract class ThumbBase 
+abstract class PHPThumbBase 
 {
 	/**
 	 * All imported objects
@@ -197,29 +200,7 @@ abstract class ThumbBase
 		$this->hasError 	= true;
 		$this->errorMessage	= $errorMessage;
 		
-		throw new Exception ($errorMessage);
-	}
-	
-	/**
-	 * Calls plugin / imported functions
-	 * 
-	 * This is also where a fair amount of plugins magaic happens.  This magic method is called whenever an "undefined" class 
-	 * method is called in code, and we use that to call an imported function. 
-	 * 
-	 * You should NEVER EVER EVER invoke this function manually.  The universe will implode if you do... seriously ;)
-	 * 
-	 * @param string $method
-	 * @param array $args
-	 */
-	public function __call ($method, $args)
-	{
-		if( array_key_exists($method, $this->importedFunctions))
-		{
-			$args[] =& $this;
-			return call_user_func_array(array($this->importedFunctions[$method], $method), $args);
-		}
-		
-		throw new BadMethodCallException ('Call to undefined method/class function: ' . $method);
+		throw new \Exception ($errorMessage);
 	}
 
     /**

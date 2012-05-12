@@ -1,4 +1,7 @@
 <?php
+
+namespace PHPThumb;
+
 /**
  * PhpThumb Library Definition File
  * 
@@ -27,23 +30,6 @@
  * @filesource
  */
 
-// define some useful constants
-define('THUMBLIB_BASE_PATH', dirname(__FILE__));
-define('THUMBLIB_PLUGIN_PATH', THUMBLIB_BASE_PATH . '/thumb_plugins/');
-define('DEFAULT_THUMBLIB_IMPLEMENTATION', 'gd');
-
-/**
- * Include the PhpThumb Class
- */
-require_once THUMBLIB_BASE_PATH . '/PhpThumb.inc.php';
-/**
- * Include the ThumbBase Class
- */
-require_once THUMBLIB_BASE_PATH . '/ThumbBase.inc.php';
-/**
- * Include the GdThumb Class
- */
-require_once THUMBLIB_BASE_PATH . '/GdThumb.inc.php';
 
 /**
  * PhpThumbFactory Object
@@ -63,30 +49,8 @@ require_once THUMBLIB_BASE_PATH . '/GdThumb.inc.php';
  * @package PhpThumb
  * @subpackage Core
  */
-class PhpThumbFactory
+class PHPThumb
 {
-	/**
-	 * Which implemenation of the class should be used by default
-	 * 
-	 * Currently, valid options are:
-	 *  - imagick
-	 *  - gd
-	 *  
-	 * These are defined in the implementation map variable, inside the create function
-	 * 
-	 * @var string
-	 */
-	public static $defaultImplemenation = DEFAULT_THUMBLIB_IMPLEMENTATION;
-	/**
-	 * Where the plugins can be loaded from
-	 * 
-	 * Note, it's important that this path is properly defined.  It is very likely that you'll 
-	 * have to change this, as the assumption here is based on a relative path.
-	 * 
-	 * @var string
-	 */
-	public static $pluginPath = THUMBLIB_PLUGIN_PATH;
-	
 	/**
 	 * Factory Function
 	 * 
@@ -112,11 +76,6 @@ class PhpThumbFactory
 			'gd' 		=> 'GdThumb'
 		);
 		
-		// grab an instance of PhpThumb
-		$pt = PhpThumb::getInstance();
-		// load the plugins
-		$pt->loadPlugins(self::$pluginPath);
-		
 		$toReturn = null;
 		$implementation = self::$defaultImplemenation;
 		
@@ -126,14 +85,12 @@ class PhpThumbFactory
 			$imp = $implementationMap[self::$defaultImplemenation];
 			$toReturn = new $imp($filename, $options, $isDataStream);
 		}
-		// load the gd implementation if default failed
 		else if ($pt->isValidImplementation('gd'))
 		{
 			$imp = $implementationMap['gd'];
 			$implementation = 'gd';
 			$toReturn = new $imp($filename, $options, $isDataStream);
 		}
-		// throw an exception if we can't load
 		else
 		{
 			throw new Exception('You must have either the GD or iMagick extension loaded to use this library');

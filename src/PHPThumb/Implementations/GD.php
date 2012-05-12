@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPThumb;
+namespace PHPThumb\Implementations;
 
 /**
  * PhpThumb GD Thumb Class Definition File
@@ -25,15 +25,7 @@ namespace PHPThumb;
  * @filesource
  */
 
-/**
- * GdThumb Class Definition
- * 
- * This is the GD Implementation of the PHP Thumb library.
- * 
- * @package PhpThumb
- * @subpackage Core
- */
-class GdThumb extends ThumbBase
+class GD extends \PHPThumb\PHPThumbBase
 {
 	/**
 	 * The prior image (before manipulation)
@@ -89,10 +81,10 @@ class GdThumb extends ThumbBase
 	protected $percent;
 	
 	/**
-	 * Class Constructor
 	 * 
-	 * @return GdThumb 
 	 * @param string $fileName
+	 * @param array $options
+	 * @param bool $isDataStream
 	 */
 	public function __construct ($fileName, $options = array(), $isDataStream = false)
 	{
