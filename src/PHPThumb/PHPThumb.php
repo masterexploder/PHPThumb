@@ -36,39 +36,7 @@ namespace PHPThumb;
  * @subpackage Core
  */
 abstract class PHPThumb
-{
-	/**
-	 * All imported objects
-	 * 
-	 * An array of imported plugin objects
-	 * 
-	 * @var array
-	 */
-	protected $imported;
-	
-	/**
-	 * All imported object functions
-	 * 
-	 * An array of all methods added to this class by imported plugin objects
-	 * 
-	 * @var array
-	 */
-	protected $importedFunctions;
-	
-	/**
-	 * The last error message raised
-	 * 
-	 * @var string
-	 */
-	protected $errorMessage;
-	
-	/**
-	 * Whether or not the current instance has any errors
-	 * 
-	 * @var bool
-	 */
-	protected $hasError;
-	
+{	
 	/**
 	 * The name of the file we're manipulating
 	 * 
@@ -98,28 +66,27 @@ abstract class PHPThumb
 	 */
 	protected $plugins;
 	
-	/**
-	 * Class constructor
-	 * 
-	 * @return ThumbBase
-	 */
-	public function __construct($fileName)
+	
+	public function __construct($fileName, array $options = array(), array $plugins = array())
 	{
-		$this->imported				= array();
-		$this->importedFunctions	= array();
-		$this->errorMessage			= null;
-		$this->hasError				= false;
 		$this->fileName				= $fileName;
 		$this->remoteImage			= false;
 		
 		$this->fileExistsAndReadable();
+		$this->setOptions($options);
+		$this->plugins = $plugins;
+	}
+	
+	protected function setOptions(array $options)
+	{
+		//Override this in child classes as necessary
 	}
 	
 	/**
 	 * Checks to see if $this->fileName exists and is readable
 	 * 
 	 */
-	protected function fileExistsAndReadable ()
+	protected function fileExistsAndReadable()
 	{
 		if (preg_match('/https?:\/\//', $this->fileName) !== 0)
 		{
@@ -138,60 +105,12 @@ abstract class PHPThumb
 	}
 	
 	/**
-	 * Sets $this->errorMessage to $errorMessage and throws an exception
-	 * 
-	 * Also sets $this->hasError to true, so even if the exceptions are caught, we don't
-	 * attempt to proceed with any other functions
-	 * 
+	 * Throws an exception.
 	 * @param string $errorMessage
 	 */
 	protected function triggerError ($errorMessage)
 	{
-		$this->hasError 	= true;
-		$this->errorMessage	= $errorMessage;
-		
 		throw new \Exception ($errorMessage);
-	}
-
-    /**
-     * Returns $imported.
-     * @see ThumbBase::$imported
-     * @return array
-     */
-    public function getImported ()
-    {
-        return $this->imported;
-    }
-    
-    /**
-     * Returns $importedFunctions.
-     * @see ThumbBase::$importedFunctions
-     * @return array
-     */
-    public function getImportedFunctions ()
-    {
-        return $this->importedFunctions;
-    }
-	
-	/**
-	 * Returns $errorMessage.
-	 *
-	 * @see ThumbBase::$errorMessage
-	 */
-	public function getErrorMessage ()
-	{
-		return $this->errorMessage;
-	}
-	
-	/**
-	 * Sets $errorMessage.
-	 *
-	 * @param object $errorMessage
-	 * @see ThumbBase::$errorMessage
-	 */
-	public function setErrorMessage ($errorMessage)
-	{
-		$this->errorMessage = $errorMessage;
 	}
 	
 	/**
@@ -235,27 +154,4 @@ abstract class PHPThumb
 	{
 		$this->format = $format;
 	}
-	
-	/**
-	 * Returns $hasError.
-	 *
-	 * @see ThumbBase::$hasError
-	 */
-	public function getHasError ()
-	{
-		return $this->hasError;
-	}
-	
-	/**
-	 * Sets $hasError.
-	 *
-	 * @param object $hasError
-	 * @see ThumbBase::$hasError
-	 */
-	public function setHasError ($hasError)
-	{
-		$this->hasError = $hasError;
-	} 
-	
-
 }

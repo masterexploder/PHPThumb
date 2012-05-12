@@ -93,9 +93,9 @@ class GD extends PHPThumb
 	 * @param array $options
 	 * @param bool $isDataStream
 	 */
-	public function __construct ($fileName, $options = array())
+	public function __construct ($fileName, $options = array(), array $plugins = array())
 	{
-		parent::__construct($fileName);
+		parent::__construct($fileName, $options, $plugins);
 		
 		$this->determineFormat();
 		$this->verifyFormatCompatiblity();
@@ -120,8 +120,6 @@ class GD extends PHPThumb
 			'width' 	=> imagesx($this->oldImage),
 			'height'	=> imagesy($this->oldImage)
 		);
-		
-		$this->setOptions($options);
 	}
 	
 	public function __destruct ()
