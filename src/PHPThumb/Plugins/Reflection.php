@@ -35,16 +35,32 @@ namespace PHPThumb\Plugins;
  */
 class Reflection implements \PHPThumb\ThumbPluginInterface
 {
-	protected $parentInstance;
 	protected $currentDimensions;
 	protected $workingImage;
 	protected $newImage;
 	protected $options;
 	
-	//public function createReflection ($percent, $reflection, $white, $border, $borderColor, &$that)
-	public function execute(\PHPThumb\GD $phpthumb, array $params = array())
+	protected $percent;
+	protected $reflection;
+	protected $white;
+	protected $border;
+	protected $borderColor;
+	
+	public function __construct($percent, $reflection, $white, $border, $borderColor)
 	{
-		// bring stuff from the parent class into this class...
+		$this->percent = $percent;
+		$this->reflection = $reflection;
+		$this->white = $white;
+		$this->border = $border;
+		$this->borderColor = $borderColor;
+	}
+	
+	/**
+	 * (non-PHPdoc)
+	 * @see PHPThumb.ThumbPluginInterface::execute()
+	 */
+	public function execute($phpthumb)
+	{
 		$this->currentDimensions 	= $phpthumb->getCurrentDimensions();
 		$this->workingImage			= $phpthumb->getWorkingImage();
 		$this->newImage				= $phpthumb->getOldImage();
@@ -52,9 +68,9 @@ class Reflection implements \PHPThumb\ThumbPluginInterface
 		
 		$width				= $this->currentDimensions['width'];
 		$height				= $this->currentDimensions['height'];
-		$reflectionHeight 	= intval($height * ($reflection / 100));
-		$newHeight			= $height + $reflectionHeight;
-		$reflectedPart		= $height * ($percent / 100);
+		$this->reflectionHeight 	= intval($height * ($this->reflection / 100));
+		$newHeight			= $height + $this->reflectionHeight;
+		$reflectedPart		= $height * ($this->percent / 100);
 		
 		$this->workingImage = imagecreatetruecolor($width, $newHeight);
 		
@@ -72,7 +88,7 @@ class Reflection implements \PHPThumb\ThumbPluginInterface
             0,
             $reflectedPart,
             $width,
-            $reflectionHeight,
+            $this->reflectionHeight,
             $width,
             ($height - $reflectedPart)
 		);
@@ -83,16 +99,16 @@ class Reflection implements \PHPThumb\ThumbPluginInterface
 		
 		imagealphablending($this->workingImage, true);
 		
-		for ($i = 0; $i < $reflectionHeight; $i++) 
+		for ($i = 0; $i < $this->reflectionHeight; $i++) 
 		{
-            $colorToPaint = imagecolorallocatealpha($this->workingImage, 255, 255, 255, ($i/$reflectionHeight*-1+1)*$white);
+            $colorToPaint = imagecolorallocatealpha($this->workingImage, 255, 255, 255, ($i/$this->reflectionHeight*-1+1)*$this->white);
 			
             imagefilledrectangle($this->workingImage, 0, $height + $i, $width, $height + $i, $colorToPaint);
         }
 		
-		if($border == true) 
+		if($this->border == true) 
 		{
-            $rgb 			= $this->hex2rgb($borderColor, false);
+            $rgb 			= $this->hex2rgb($this->borderColor, false);
             $colorToPaint 	= imagecolorallocate($this->workingImage, $rgb[0], $rgb[1], $rgb[2]);
 			
             imageline($this->workingImage, 0, 0, $width, 0, $colorToPaint); //top line
@@ -121,7 +137,7 @@ class Reflection implements \PHPThumb\ThumbPluginInterface
 		$this->currentDimensions['height']	= $newHeight;
 		$phpthumb->setCurrentDimensions($this->currentDimensions);
 		
-		return $that;
+		return $phpthumb;
 	}
 	
 	/**

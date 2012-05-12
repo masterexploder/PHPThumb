@@ -938,6 +938,17 @@ class GD extends PHPThumb
 	 */
 	public function show ($rawData = false) 
 	{
+		//Execute any plugins
+		if($this->plugins)
+		{
+			foreach($this->plugins as $plugin)
+			{
+				/* @var $plugin ThumbPluginInterface */
+				$plugin->execute($this);
+			}
+		}
+		
+		
 		if (headers_sent() && php_sapi_name() != 'cli')
 		{
 			throw new RuntimeException('Cannot show image, headers have already been sent');
