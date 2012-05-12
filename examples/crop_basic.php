@@ -23,11 +23,8 @@
  * @filesource
  */
 
-require_once '../ThumbLib.inc.php';
+require_once '../tests/bootstrap.php';
 
-$thumb = PhpThumbFactory::create('test.jpg');
+$thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg');
 $thumb->crop(100, 100, 300, 200);
-
 $thumb->show();
-
-?>

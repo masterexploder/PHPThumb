@@ -23,14 +23,10 @@
  * @filesource
  */
 
-require_once '../ThumbLib.inc.php';
+require_once '../tests/bootstrap.php';
 
-$thumb = PhpThumbFactory::create('test.jpg');
+$thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg');
 $thumb->cropFromCenter(200, 100);
-
-// square crops need only one paramter:
-// $thumb->cropFromCenter(200);
-
 $thumb->show();
 
 ?>

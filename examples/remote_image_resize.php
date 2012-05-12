@@ -23,9 +23,14 @@
  * @filesource
  */
 
-require_once '../ThumbLib.inc.php';
+/* require_once '../ThumbLib.inc.php';
 
 $thumb = PhpThumbFactory::create('http://phpthumb.gxdlabs.com/wp-content/themes/phpthumb/images/header_bg.png');
+$thumb->resize(200, 200);
+$thumb->show(); */
+
+require_once '../tests/bootstrap.php';
+$thumb = new PHPThumb\GD('http://phpthumb.gxdlabs.com/wp-content/themes/phpthumb/images/header_bg.png');
 $thumb->resize(200, 200);
 $thumb->show();
 
