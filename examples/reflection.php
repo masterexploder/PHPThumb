@@ -30,10 +30,11 @@ $thumb->adaptiveResize(250, 250)->createReflection(40, 40, 80, true, '#a4a4a4');
 $thumb->show();
  */
 require_once '../tests/bootstrap.php';
-$thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg', array(), array(
+
+
+$thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg', array(), new PHPThumb\PluginCollection(array(
 	new PHPThumb\Plugins\Reflection(40, 40, 80, true, '#a4a4a4')
-));
+)));
 
 $thumb->adaptiveResize(250, 250);
 $thumb->show();
-

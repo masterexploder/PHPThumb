@@ -93,7 +93,7 @@ class GD extends PHPThumb
 	 * @param array $options
 	 * @param bool $isDataStream
 	 */
-	public function __construct ($fileName, $options = array(), array $plugins = array())
+	public function __construct ($fileName, $options = array(), PluginCollection $plugins = null)
 	{
 		parent::__construct($fileName, $options, $plugins);
 		
@@ -515,6 +515,7 @@ class GD extends PHPThumb
 
 		return $this;
 	}
+	
 	/**
 	 * Adaptively Resizes the Image and Crops Using a Quadrant
 	 *
@@ -725,13 +726,11 @@ class GD extends PHPThumb
 	 */
 	public function cropFromCenter ($cropWidth, $cropHeight = null)
 	{
-		if (!is_numeric($cropWidth))
-		{
+		if (!is_numeric($cropWidth)) {
 			throw new InvalidArgumentException('$cropWidth must be numeric');
 		}
 		
-		if ($cropHeight !== null && !is_numeric($cropHeight))
-		{
+		if ($cropHeight !== null && !is_numeric($cropHeight)) {
 			throw new InvalidArgumentException('$cropHeight must be numeric');
 		}
 		
@@ -763,23 +762,19 @@ class GD extends PHPThumb
 	public function crop ($startX, $startY, $cropWidth, $cropHeight)
 	{
 		// validate input
-		if (!is_numeric($startX))
-		{
+		if (!is_numeric($startX)) {
 			throw new InvalidArgumentException('$startX must be numeric');
 		}
 		
-		if (!is_numeric($startY))
-		{
+		if (!is_numeric($startY)) {
 			throw new InvalidArgumentException('$startY must be numeric');
 		}
 		
-		if (!is_numeric($cropWidth))
-		{
+		if (!is_numeric($cropWidth)) {
 			throw new InvalidArgumentException('$cropWidth must be numeric');
 		}
 		
-		if (!is_numeric($cropHeight))
-		{
+		if (!is_numeric($cropHeight)) {
 			throw new InvalidArgumentException('$cropHeight must be numeric');
 		}
 		
@@ -791,7 +786,6 @@ class GD extends PHPThumb
 		if (($startX + $cropWidth) > $this->currentDimensions['width'])
 		{
 			$startX = ($this->currentDimensions['width'] - $cropWidth);
-			
 		}
 		
 		if (($startY + $cropHeight) > $this->currentDimensions['height'])
@@ -947,7 +941,6 @@ class GD extends PHPThumb
 				$plugin->execute($this);
 			}
 		}
-		
 		
 		if (headers_sent() && php_sapi_name() != 'cli')
 		{
@@ -1119,6 +1112,8 @@ class GD extends PHPThumb
 		}
 		
 		$this->options = array_merge($defaultOptions, $options);
+		
+		return $this;
 	}
 	
 	/**
@@ -1140,6 +1135,7 @@ class GD extends PHPThumb
 	public function setCurrentDimensions ($currentDimensions)
 	{
 		$this->currentDimensions = $currentDimensions;
+		return $this;
 	}
 	
 	/**
@@ -1161,6 +1157,7 @@ class GD extends PHPThumb
 	public function setMaxHeight ($maxHeight)
 	{
 		$this->maxHeight = $maxHeight;
+		return $this;
 	}
 	
 	/**
@@ -1182,6 +1179,7 @@ class GD extends PHPThumb
 	public function setMaxWidth ($maxWidth)
 	{
 		$this->maxWidth = $maxWidth;
+		return $this;
 	}
 	
 	/**
@@ -1203,6 +1201,7 @@ class GD extends PHPThumb
 	public function setNewDimensions ($newDimensions)
 	{
 		$this->newDimensions = $newDimensions;
+		return $this;
 	}
 	
 	/**
@@ -1234,6 +1233,7 @@ class GD extends PHPThumb
 	public function setPercent ($percent)
 	{
 		$this->percent = $percent;
+		return $this;
 	} 
 	
 	/**
@@ -1255,6 +1255,7 @@ class GD extends PHPThumb
 	public function setOldImage ($oldImage)
 	{
 		$this->oldImage = $oldImage;
+		return $this;
 	}
 	
 	/**
@@ -1276,6 +1277,7 @@ class GD extends PHPThumb
 	public function setWorkingImage ($workingImage)
 	{
 		$this->workingImage = $workingImage;
+		return $this;
 	} 
 	
 	
