@@ -77,10 +77,7 @@ abstract class PHPThumb
 		$this->plugins = $plugins;
 	}
 	
-	protected function setOptions(array $options)
-	{
-		//Override this in child classes as necessary
-	}
+	abstract public function setOptions(array $options = array());
 	
 	/**
 	 * Checks to see if $this->fileName exists and is readable
@@ -96,21 +93,14 @@ abstract class PHPThumb
 		
 		if (!file_exists($this->fileName))
 		{
-			$this->triggerError('Image file not found: ' . $this->fileName);
+			throw new \InvalidArgumentException('Image file not found: ' . $this->fileName);
 		}
+		// @codeCoverageIgnoreStart
 		elseif (!is_readable($this->fileName))
 		{
-			$this->triggerError('Image file not readable: ' . $this->fileName);
+			throw new \InvalidArgumentException('Image file not readable: ' . $this->fileName);
 		}
-	}
-	
-	/**
-	 * Throws an exception.
-	 * @param string $errorMessage
-	 */
-	protected function triggerError ($errorMessage)
-	{
-		throw new \Exception ($errorMessage);
+		// @codeCoverageIgnoreEnd
 	}
 	
 	/**
@@ -153,5 +143,10 @@ abstract class PHPThumb
 	public function setFormat ($format)
 	{
 		$this->format = $format;
+	}
+	
+	public function getIsRemoteImage()
+	{
+		return $this->remoteImage;
 	}
 }

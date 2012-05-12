@@ -1072,7 +1072,7 @@ class GD extends PHPThumb
 	 * 
 	 * @param array $options
 	 */
-	public function setOptions ($options = array())
+	public function setOptions (array $options = array())
 	{
 		// make sure we've got an array for $this->options (could be null)
 		if (!is_array($this->options))
@@ -1453,11 +1453,11 @@ class GD extends PHPThumb
 		{
 			if ($this->remoteImage)
 			{
-				$this->triggerError('Could not determine format of remote image: ' . $this->fileName);
+				throw new \Exception('Could not determine format of remote image: ' . $this->fileName);
 			}
 			else
 			{
-				$this->triggerError('File is not a valid image: ' . $this->fileName);
+				throw new \Exception('File is not a valid image: ' . $this->fileName);
 			}
 			
 			// make sure we really stop execution
@@ -1478,7 +1478,7 @@ class GD extends PHPThumb
 				$this->format = 'PNG';
 				break;
 			default:
-				$this->triggerError('Image format not supported: ' . $mimeType);
+				throw new \Exception('Image format not supported: ' . $mimeType);
 		}
 	}
 	
@@ -1513,7 +1513,7 @@ class GD extends PHPThumb
 			
 			if (!$isCompatible)
 			{
-				$this->triggerError('Your GD installation does not support ' . $this->format . ' image types');
+				throw new \Exception('Your GD installation does not support ' . $this->format . ' image types');
 			}
 		}
 	}
