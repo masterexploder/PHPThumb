@@ -8,5 +8,3 @@ spl_autoload_register(function($class)
 		return true;
 	}
 });
-
-require_once 'helpers.php';
