@@ -1,4 +1,7 @@
 <?php
+
+namespace PHPThumb;
+
 /**
  * PhpThumb GD Thumb Class Definition File
  * 

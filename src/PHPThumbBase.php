@@ -42,6 +42,7 @@ abstract class ThumbBase
 	 * @var array
 	 */
 	protected $imported;
+	
 	/**
 	 * All imported object functions
 	 * 
@@ -50,18 +51,21 @@ abstract class ThumbBase
 	 * @var array
 	 */
 	protected $importedFunctions;
+	
 	/**
 	 * The last error message raised
 	 * 
 	 * @var string
 	 */
 	protected $errorMessage;
+	
 	/**
 	 * Whether or not the current instance has any errors
 	 * 
 	 * @var bool
 	 */
 	protected $hasError;
+	
 	/**
 	 * The name of the file we're manipulating
 	 * 
@@ -70,18 +74,21 @@ abstract class ThumbBase
 	 * @var string
 	 */
 	protected $fileName;
+	
 	/**
 	 * What the file format is (mime-type)
 	 * 
 	 * @var string
 	 */
 	protected $format;
+	
 	/**
 	 * Whether or not the image is hosted remotely
 	 * 
 	 * @var bool
 	 */
 	protected $remoteImage;
+	
 	/**
 	 * Whether or not the current image is an actual file, or the raw file data
 	 *
