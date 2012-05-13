@@ -2,7 +2,7 @@
 
 namespace PHPThumb;
 
-interface ThumbPluginInterface
+interface PluginInterface
 {
 	/**
 	 * @param PHPThumb $phpthumb

@@ -33,7 +33,7 @@ namespace PHPThumb\Plugins;
  * @package PhpThumb
  * @subpackage Plugins
  */
-class Reflection implements \PHPThumb\ThumbPluginInterface
+class Reflection implements \PHPThumb\PluginInterface
 {
 	protected $currentDimensions;
 	protected $workingImage;
