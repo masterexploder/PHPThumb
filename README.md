@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/Blackshawk/PHPThumb.png?branch=master)](http://travis-ci.org/Blackshawk/PHPThumb)
+
 # PHP Thumb
 
 ## NOTICE - from Jarrod Nettles (the forker)
