@@ -1,0 +1,24 @@
+{
+	"name": "Blackshawk/PHPThumb",
+	"type": "library",
+	"require": {
+        	"php": ">=5.3.0"
+	},
+	"homepage": "https://github.com/Blackshawk/PHPThumb",
+	"authors": [
+		{
+			"name": "Jarrod Nettles",
+			"email": "jarrod@squarecrow.com"
+		}
+	],
+
+	"autoload": {
+		"psr-0": {
+			"PHPThumb": "src"
+		}
+	},
+	
+	"keywords": ["image", "resize", "rotate"],
+
+	"description": "A library for manipulating images in PHP."
+}

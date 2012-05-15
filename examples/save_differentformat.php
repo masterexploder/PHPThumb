@@ -22,15 +22,8 @@
  * @subpackage Examples
  * @filesource
  */
+require_once '../tests/bootstrap.php';
 
-require_once '../ThumbLib.inc.php';
-
-$thumb = PhpThumbFactory::create('test.jpg');
-$thumb->cropFromCenter(200, 100);
-
-// square crops need only one paramter:
-// $thumb->cropFromCenter(200);
-
-$thumb->show();
-
-?>
+$thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg');
+$thumb->adaptiveResize(300, 300);
+$thumb->save('test.png', 'png');
