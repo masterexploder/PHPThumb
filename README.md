@@ -1,4 +1,17 @@
+[![Build Status](https://secure.travis-ci.org/Blackshawk/PHPThumb.png?branch=master)](http://travis-ci.org/Blackshawk/PHPThumb)
+
 # PHP Thumb
+
+## NOTICE - from Jarrod Nettles (the forker)
+I've made some very radical changes to this library in getting it ready for PHP 5.3. My goals are to get it into a
+PSR-0 compliant state and into packagist as such so that it can be easily used in any project. If you intend to use my 
+code, bear in mind that most of the documentation is no longer relevant. Instead, look at the examples folder in the project
+as I've updated each of them to reflect the new API.
+
+The API is still in flux, as I haven't exactly pinned down where I'd like to take some parts so take anything you
+see with a grain of salt. 
+
+
 
 PHP Thumb is a light-weight image manipulation library 
 aimed at thumbnail generation. It features the ability to 
@@ -20,18 +33,6 @@ find documentation / help:
 - [Documentation](http://wiki.github.com/iselby/PHPThumb/) - Your best friend, the library docs
 - [Forums](http://phpthumb.gxdlabs.com/forums) - Got questions, comments, or feedback? This is the place to visit
 - [Developer Docs](http://phpthumb.gxdlabs.com/apidocs) - Auto-generated docs for developers… these cover the code itself
-
-## Developing
-
-While I know it's somewhat discriminatory in the PHP world since many of
-you are still on windows (thus making working with ruby a bit more difficult), 
-I've created a rakefile that takes care of common tasks (such as generating docs, 
-building release tarballs, etc.)  This probably isn't relevant to anything you 
-would be doing unless you want to fork this project and release your version of it.
-
-On that note, if you'd like to contribute to the project, you can either fork it and
-submit back to me, or you can ask to be a contributor.  Reach out to me if you're 
-interested, I'm happy to chat :)
 
 ## License
 

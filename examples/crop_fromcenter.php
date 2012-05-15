@@ -23,14 +23,10 @@
  * @filesource
  */
 
-require_once '../ThumbLib.inc.php';
+require_once '../tests/bootstrap.php';
 
-$thumb = PhpThumbFactory::create('test.jpg');
-$thumb->rotateImage('CW');
-
-// or:
-// $thumb->rotate('CCW');
-
+$thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg');
+$thumb->cropFromCenter(200, 100);
 $thumb->show();
 
 ?>
