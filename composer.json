@@ -1,15 +1,20 @@
 {
-	"name": "Blackshawk/PHPThumb",
+	"name": "masterexploder/PHPThumb",
 	"type": "library",
 	"require": {
         	"php": ">=5.3.0"
 	},
-	"homepage": "https://github.com/Blackshawk/PHPThumb",
+	"homepage": "https://github.com/masterexploder/PHPThumb",
 	"authors": [
+		{
+			"name": "Ian Selby",
+			"email": "ian@gxdlabs.com"
+		},
 		{
 			"name": "Jarrod Nettles",
 			"email": "jarrod@squarecrow.com"
 		}
+		
 	],
 
 	"autoload": {
