@@ -23,7 +23,6 @@
  * @filesource
  */
 
-
 require_once '../tests/bootstrap.php';
 
 $thumb = new PHPThumb\GD('http://phpthumb.gxdlabs.com/wp-content/themes/phpthumb/images/header_bg.png');

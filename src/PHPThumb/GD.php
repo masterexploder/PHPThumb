@@ -350,7 +350,6 @@ class GD extends PHPThumb
         return $this;
     }
 
-
     /**
      * Adaptively Resizes the Image and Crops Using a Percentage
      *
@@ -796,7 +795,6 @@ class GD extends PHPThumb
         $this->currentDimensions['width']  = $newWidth;
         $this->currentDimensions['height'] = $newHeight;
 
-
         return $this;
     }
 
@@ -891,7 +889,6 @@ class GD extends PHPThumb
                 break;
         }
 
-
         return $this;
     }
 
@@ -969,7 +966,6 @@ class GD extends PHPThumb
                 imagepng($this->oldImage, $fileName);
                 break;
         }
-
 
         return $this;
     }

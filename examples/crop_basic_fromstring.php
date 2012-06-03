@@ -23,7 +23,6 @@
  * @filesource
  */
 
-
 require_once '../ThumbLib.inc.php';
 
 $fileData = file_get_contents('test.jpg');

@@ -23,7 +23,6 @@
  * @filesource
  */
 
-
 require_once '../tests/bootstrap.php';
 
 $thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg');

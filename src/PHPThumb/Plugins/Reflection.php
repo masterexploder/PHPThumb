@@ -203,7 +203,6 @@ class Reflection implements \PHPThumb\PluginInterface
         $this->currentDimensions['height'] = $newHeight;
         $phpthumb->setCurrentDimensions($this->currentDimensions);
 
-
         return $phpthumb;
     }
 
