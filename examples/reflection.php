@@ -1,18 +1,18 @@
 <?php
 /**
  * PhpThumb Library Example File
- * 
+ *
  * This file contains example usage for the PHP Thumb Library
- * 
+ *
  * PHP Version 5 with GD 2.0+
  * PhpThumb : PHP Thumb Library <http://phpthumb.gxdlabs.com>
  * Copyright (c) 2009, Ian Selby/Gen X Design
- * 
+ *
  * Author(s): Ian Selby <ian@gen-x-design.com>
- * 
+ *
  * Licensed under the MIT License
  * Redistributions of files must retain the above copyright notice.
- * 
+ *
  * @author Ian Selby <ian@gen-x-design.com>
  * @copyright Copyright (c) 2009 Gen X Design
  * @link http://phpthumb.gxdlabs.com
@@ -23,17 +23,11 @@
  * @filesource
  */
 
-/* require_once '../ThumbLib.inc.php';
 
-$thumb = PhpThumbFactory::create('test.jpg');
-$thumb->adaptiveResize(250, 250)->createReflection(40, 40, 80, true, '#a4a4a4');
-$thumb->show();
- */
 require_once '../tests/bootstrap.php';
 
-
 $thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg', array(), new PHPThumb\PluginCollection(array(
-	new PHPThumb\Plugins\Reflection(40, 40, 80, true, '#a4a4a4')
+    new PHPThumb\Plugins\Reflection(40, 40, 80, true, '#a4a4a4')
 )));
 
 $thumb->adaptiveResize(250, 250);
