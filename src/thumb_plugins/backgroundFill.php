@@ -31,7 +31,7 @@ class BackgroundFillLib {
 		if ( ! is_array( $color ) )
 			$color = array( 'top' => $color, 'bottom' => $color, 'left' => $color, 'right' => $color );
 
-		$this->backgroundFillColor( $width, $height, $color, &$that );
+		$this->backgroundFillColor( $width, $height, $color, $that );
 
 	}
 
@@ -64,7 +64,7 @@ class BackgroundFillLib {
 		$colors['top']		= key( $top );
 		$colors['bottom'] 	= key( $bottom );
 
-		$this->backgroundFillColor( $width, $height, $colors, &$that );
+		$this->backgroundFillColor( $width, $height, $colors, $that );
 
 	}
 
