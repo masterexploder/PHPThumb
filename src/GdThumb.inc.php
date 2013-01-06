@@ -1469,7 +1469,8 @@ class GdThumb extends ThumbBase
 			return;
 		}
 		
-		$formatInfo = getimagesize($this->fileName);
+		// According to php.net, getimagesize does not accept spaces in filenme. 
+		$formatInfo = getimagesize(str_replace(' ','%20',$this->fileName));
 		
 		// non-image files will return false
 		if ($formatInfo === false)
