@@ -17,7 +17,7 @@ homepage: [http://phpthumb.gxdlabs.com](http://phpthumb.gxdlabs.com)
 I've tried to thoroughly document things as best I can, but here's a list of places to 
 find documentation / help:
 
-- [Documentation](http://wiki.github.com/iselby/PHPThumb/) - Your best friend, the library docs
+- [Documentation](https://github.com/masterexploder/PHPThumb/wiki) - Your best friend, the library docs
 - [Forums](http://phpthumb.gxdlabs.com/forums) - Got questions, comments, or feedback? This is the place to visit
 - [Developer Docs](http://phpthumb.gxdlabs.com/apidocs) - Auto-generated docs for developers… these cover the code itself
 
