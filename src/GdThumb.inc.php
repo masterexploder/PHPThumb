@@ -292,6 +292,80 @@ class GdThumb extends ThumbBase
 	}
 	
 	/**
+	 * Resizes an image to be $width and $height. Maintain aspect ratio add black bg if overflow.
+	 * 
+	 * If either param is set to zero, then that dimension will not be considered as a part of the resize.
+	 * Additionally, if $this->options['resizeUp'] is set to true (false by default), then this function will
+	 * also scale the image up to the maximum dimensions provided.
+	 * 
+	 * @param int $width The width of the image in pixels
+	 * @param int $height The height of the image in pixels
+	 * @return GdThumb
+	 */
+	public function boundResize ($width = 0, $height = 0)
+	{
+		// make sure our arguments are valid
+		if (!is_numeric($width))
+		{
+			throw new InvalidArgumentException('$width must be numeric');
+		}
+		
+		if (!is_numeric($height))
+		{
+			throw new InvalidArgumentException('$height must be numeric');
+		}
+		
+		// make sure we're not exceeding our image size if we're not supposed to
+		if ($this->options['resizeUp'] === false)
+		{
+			$this->maxHeight	= (intval($height) > $this->currentDimensions['height']) ? $this->currentDimensions['height'] : $height;
+			$this->maxWidth		= (intval($width) > $this->currentDimensions['width']) ? $this->currentDimensions['width'] : $width;
+		}
+		else
+		{
+			$this->maxHeight	= intval($height);
+			$this->maxWidth		= intval($width);
+		}
+		
+		// get the new dimensions...
+		$this->calcImageSize($this->currentDimensions['width'], $this->currentDimensions['height']);
+		
+		// create the working image
+		if (function_exists('imagecreatetruecolor'))
+		{
+			$this->workingImage = imagecreatetruecolor($width, $height);
+		}
+		else
+		{
+			$this->workingImage = imagecreate($width, $height);
+		}
+		
+		$this->preserveAlpha();		
+		
+		// and create the newly sized image
+		imagecopyresampled
+		(
+			$this->workingImage,
+			$this->oldImage,
+			($width-$this->newDimensions['newWidth'])/2,
+			($height-$this->newDimensions['newHeight'])/2,
+			0,
+			0,
+			$this->newDimensions['newWidth'],
+			$this->newDimensions['newHeight'],
+			$this->currentDimensions['width'],
+			$this->currentDimensions['height']
+		);
+
+		// update all the variables and resources to be correct
+		$this->oldImage 					= $this->workingImage;
+		$this->currentDimensions['width'] 	= $this->newDimensions['newWidth'];
+		$this->currentDimensions['height'] 	= $this->newDimensions['newHeight'];
+		
+		return $this;
+	}
+	
+	/**
 	 * Adaptively Resizes the Image
 	 * 
 	 * This function attempts to get the image to as close to the provided dimensions as possible, and then crops the 
