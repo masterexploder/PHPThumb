@@ -3,7 +3,8 @@
     "type": "library",
     "description": "A library for manipulating images in PHP.",
     "require": {
-        	"php": ">=5.3.0"
+        	"php": ">=5.3.0",
+            "symfony/filesystem": "2.2.*"
 	},
     "homepage": "https://github.com/masterexploder/PHPThumb",
 	"authors": [
