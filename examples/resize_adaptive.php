@@ -23,7 +23,7 @@
  * @filesource
  */
 
-require_once '../tests/bootstrap.php';
+require_once '../vendor/autoload.php';
 
 $thumb = new PHPThumb\GD(__DIR__ .'/../tests/resources/test.jpg');
 $thumb->adaptiveResize(175, 175);

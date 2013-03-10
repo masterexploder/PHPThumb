@@ -23,7 +23,7 @@
  * @filesource
  */
 
-require_once '../tests/bootstrap.php';
+require_once '../vendor/autoload.php';
 
 $thumb = new PHPThumb\GD('http://phpthumb.gxdlabs.com/wp-content/themes/phpthumb/images/header_bg.png');
 $thumb->resize(200, 200);

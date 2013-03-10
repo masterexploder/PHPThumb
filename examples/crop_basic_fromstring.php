@@ -23,11 +23,10 @@
  * @filesource
  */
 
-require_once '../ThumbLib.inc.php';
 
 $fileData = file_get_contents('test.jpg');
 
-$thumb = PhpThumbFactory::create($fileData, array(), true);
+$thumb = new PHPThumb\GD($fileData);
 $thumb->crop(100, 100, 300, 200);
 
 // $imageAsString will contain the image data suitable for saving in a database.
