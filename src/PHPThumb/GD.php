@@ -93,7 +93,7 @@ class GD extends PHPThumb
      * @param array  $options
      * @param bool   $isDataStream
      */
-    public function __construct($fileName, $options = array(), PluginCollection $plugins = null)
+    public function __construct($fileName, $options = array(), array $plugins = array())
     {
         parent::__construct($fileName, $options, $plugins);
 

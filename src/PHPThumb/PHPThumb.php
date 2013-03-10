@@ -62,7 +62,7 @@ abstract class PHPThumb
 
     /**
      * An array of attached plugins to execute in order.
-     * @var PluginCollection
+     * @var array
      */
     protected $plugins;
 
@@ -72,17 +72,13 @@ abstract class PHPThumb
      * @param array  $options
      * @param array  $plugins
      */
-    public function __construct($fileName, array $options = array(), PluginCollection $plugins = null)
+    public function __construct($fileName, array $options = array(), array $plugins = array())
     {
         $this->fileName    = $fileName;
         $this->remoteImage = false;
 
         $this->fileExistsAndReadable();
         $this->setOptions($options);
-
-        if (is_null($plugins)) {
-            $plugins = new PluginCollection();
-        }
 
         $this->plugins = $plugins;
     }
