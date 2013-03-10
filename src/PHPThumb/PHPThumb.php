@@ -3,11 +3,6 @@
 namespace PHPThumb;
 
 /**
- * PhpThumb Base Class Definition File
- *
- * This file contains the definition for the ThumbBase object
- *
- * PHP Version 5 with GD 2.0+
  * PhpThumb : PHP Thumb Library <http://phpthumb.gxdlabs.com>
  * Copyright (c) 2009, Ian Selby/Gen X Design
  *
@@ -20,31 +15,22 @@ namespace PHPThumb;
  * @copyright Copyright (c) 2009 Gen X Design
  * @link http://phpthumb.gxdlabs.com
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
- * @version 3.0
- * @package PhpThumb
- * @filesource
  */
 
-/**
- * ThumbBase Class Definition
- *
- * This is the base class that all implementations must extend.  It contains the
- * core variables and functionality common to all implementations, as well as the functions that
- * allow plugins to augment those classes.
- *
- * @package PhpThumb
- * @subpackage Core
- */
 abstract class PHPThumb
 {
     /**
      * The name of the file we're manipulating
-     *
      * This must include the path to the file (absolute paths recommended)
      *
      * @var string
      */
     protected $fileName;
+
+    /**
+     * @var \Symfony\Component\Filesystem\Filesystem
+     */
+    protected $filesystem;
 
     /**
      * What the file format is (mime-type)
@@ -67,17 +53,20 @@ abstract class PHPThumb
     protected $plugins;
 
     /**
-     *
-     * @param string $fileName
-     * @param array  $options
-     * @param array  $plugins
+     * @param $fileName
+     * @param array $options
+     * @param array $plugins
      */
     public function __construct($fileName, array $options = array(), array $plugins = array())
     {
+        $this->filesystem = new \Symfony\Component\Filesystem\Filesystem();
         $this->fileName    = $fileName;
         $this->remoteImage = false;
 
-        $this->fileExistsAndReadable();
+        if(!$this->validateRequestedResource($fileName)) {
+            throw new \InvalidArgumentException("Image file not found: {$fileName}");
+        }
+
         $this->setOptions($options);
 
         $this->plugins = $plugins;
@@ -86,32 +75,30 @@ abstract class PHPThumb
     abstract public function setOptions(array $options = array());
 
     /**
-     * Checks to see if $this->fileName exists and is readable
+     * Check the provided filename/url. If it is a url, validate that it is properly
+     * formatted. If it is a file, check to make sure that it actually exists on
+     * the filesystem.
      *
+     * @param $filename
+     * @return bool
      */
-    protected function fileExistsAndReadable()
+    protected function validateRequestedResource($filename)
     {
-        if (preg_match('/https?:\/\//', $this->fileName) !== 0) {
+        if(true === filter_var($filename, FILTER_VALIDATE_URL)) {
             $this->remoteImage = true;
-
-            return;
+            return true;
         }
 
-        if (!file_exists($this->fileName)) {
-            throw new \InvalidArgumentException("Image file not found: {$this->fileName}");
+        if($this->filesystem->exists($filename)) {
+            return true;
         }
-        // @codeCoverageIgnoreStart
-        elseif (!is_readable($this->fileName))
-        {
-            throw new \InvalidArgumentException("Image file not readable: {$this->fileName}");
-        }
-        // @codeCoverageIgnoreEnd
+
+        return false;
     }
 
     /**
-     * Returns $fileName.
-     *
-     * @see ThumbBase::$fileName
+     * Returns the filename.
+     * @return string
      */
     public function getFileName()
     {
@@ -119,10 +106,9 @@ abstract class PHPThumb
     }
 
     /**
-     * Sets $fileName.
-     *
-     * @param object $fileName
-     * @see ThumbBase::$fileName
+     * Sets the filename.
+     * @param $fileName
+     * @return PHPThumb
      */
     public function setFileName($fileName)
     {
@@ -132,9 +118,8 @@ abstract class PHPThumb
     }
 
     /**
-     * Returns $format.
-     *
-     * @see ThumbBase::$format
+     * Returns the format.
+     * @return string
      */
     public function getFormat()
     {
@@ -142,10 +127,9 @@ abstract class PHPThumb
     }
 
     /**
-     * Sets $format.
-     *
-     * @param object $format
-     * @see ThumbBase::$format
+     * Sets the format.
+     * @param $format
+     * @return PHPThumb
      */
     public function setFormat($format)
     {
@@ -154,6 +138,10 @@ abstract class PHPThumb
         return $this;
     }
 
+    /**
+     * Returns whether the image exists remotely, i.e. it was loaded via a URL.
+     * @return bool
+     */
     public function getIsRemoteImage()
     {
         return $this->remoteImage;

@@ -56,8 +56,8 @@ class Reflection implements \PHPThumb\PluginInterface
     }
 
     /**
-     * (non-PHPdoc)
-     * @see PHPThumb.ThumbPluginInterface::execute()
+     * @param \PHPThumb\PHPThumb $phpthumb
+     * @return \PHPThumb\PHPThumb
      */
     public function execute($phpthumb)
     {

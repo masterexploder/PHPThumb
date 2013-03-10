@@ -3,11 +3,6 @@
 namespace PHPThumb;
 
 /**
- * PhpThumb GD Thumb Class Definition File
- *
- * This file contains the definition for the \PHPThumb\GD object
- *
- * PHP Version 5 with GD 2.0+
  * PhpThumb : PHP Thumb Library <http://phpthumb.gxdlabs.com>
  * Copyright (c) 2009, Ian Selby/Gen X Design
  *
@@ -20,9 +15,6 @@ namespace PHPThumb;
  * @copyright Copyright (c) 2009 Gen X Design
  * @link http://phpthumb.gxdlabs.com
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
- * @version 3.0
- * @package PhpThumb
- * @filesource
  */
 
 class GD extends PHPThumb
@@ -88,10 +80,9 @@ class GD extends PHPThumb
     protected $percent;
 
     /**
-     *
      * @param string $fileName
-     * @param array  $options
-     * @param bool   $isDataStream
+     * @param array $options
+     * @param array $plugins
      */
     public function __construct($fileName, $options = array(), array $plugins = array())
     {
@@ -133,16 +124,12 @@ class GD extends PHPThumb
     }
 
     /**
-    * Pad an image to desired dimensions if required
-    *
-    * Moves the image into the center and fills the rest with $color
-    *
-    * Author: Blake Kus <http://blakek.us>
-    *
-    * @param mixed $width
-    * @param mixed $height
-    * @param mixed $color
-    */
+     * Pad an image to desired dimensions. Moves the image into the center and fills the rest with $color.
+     * @param $width
+     * @param $height
+     * @param array $color
+     * @return GD
+     */
     public function pad($width, $height, $color = array(255, 255, 255))
     {
         // no resize - woohoo!
@@ -210,11 +197,11 @@ class GD extends PHPThumb
     {
         // make sure our arguments are valid
         if (!is_numeric($maxWidth)) {
-            throw new InvalidArgumentException('$maxWidth must be numeric');
+            throw new \InvalidArgumentException('$maxWidth must be numeric');
         }
 
         if (!is_numeric($maxHeight)) {
-            throw new InvalidArgumentException('$maxHeight must be numeric');
+            throw new \InvalidArgumentException('$maxHeight must be numeric');
         }
 
         // make sure we're not exceeding our image size if we're not supposed to
@@ -274,7 +261,7 @@ class GD extends PHPThumb
     {
         // make sure our arguments are valid
         if ((!is_numeric($width) || $width  == 0) && (!is_numeric($height) || $height == 0)) {
-            throw new InvalidArgumentException('$width and $height must be numeric and greater than zero');
+            throw new \InvalidArgumentException('$width and $height must be numeric and greater than zero');
         }
 
         if (!is_numeric($width) || $width  == 0) {
@@ -384,11 +371,11 @@ class GD extends PHPThumb
     {
         // make sure our arguments are valid
         if (!is_numeric($width) || $width  == 0) {
-            throw new InvalidArgumentException('$width must be numeric and greater than zero');
+            throw new \InvalidArgumentException('$width must be numeric and greater than zero');
         }
 
         if (!is_numeric($height) || $height == 0) {
-            throw new InvalidArgumentException('$height must be numeric and greater than zero');
+            throw new \InvalidArgumentException('$height must be numeric and greater than zero');
         }
 
         // make sure we're not exceeding our image size if we're not supposed to
@@ -499,11 +486,11 @@ class GD extends PHPThumb
     {
         // make sure our arguments are valid
         if (!is_numeric($width) || $width  == 0) {
-            throw new InvalidArgumentException('$width must be numeric and greater than zero');
+            throw new \InvalidArgumentException('$width must be numeric and greater than zero');
         }
 
         if (!is_numeric($height) || $height == 0) {
-            throw new InvalidArgumentException('$height must be numeric and greater than zero');
+            throw new \InvalidArgumentException('$height must be numeric and greater than zero');
         }
 
         // make sure we're not exceeding our image size if we're not supposed to
@@ -597,17 +584,17 @@ class GD extends PHPThumb
     }
 
     /**
-     * Resizes an image by a given percent uniformly
-     *
+     * Resizes an image by a given percent uniformly,
      * Percentage should be whole number representation (i.e. 1-100)
      *
-     * @param  int          $percent
-     * @return \PHPThumb\GD
+     * @param int $percent
+     * @return GD
+     * @throws \InvalidArgumentException
      */
     public function resizePercent($percent = 0)
     {
         if (!is_numeric($percent)) {
-            throw new InvalidArgumentException ('$percent must be numeric');
+            throw new \InvalidArgumentException ('$percent must be numeric');
         }
 
         $this->percent = intval($percent);
@@ -654,11 +641,11 @@ class GD extends PHPThumb
     public function cropFromCenter($cropWidth, $cropHeight = null)
     {
         if (!is_numeric($cropWidth)) {
-            throw new InvalidArgumentException('$cropWidth must be numeric');
+            throw new \InvalidArgumentException('$cropWidth must be numeric');
         }
 
         if ($cropHeight !== null && !is_numeric($cropHeight)) {
-            throw new InvalidArgumentException('$cropHeight must be numeric');
+            throw new \InvalidArgumentException('$cropHeight must be numeric');
         }
 
         if ($cropHeight === null) {
@@ -689,19 +676,19 @@ class GD extends PHPThumb
     {
         // validate input
         if (!is_numeric($startX)) {
-            throw new InvalidArgumentException('$startX must be numeric');
+            throw new \InvalidArgumentException('$startX must be numeric');
         }
 
         if (!is_numeric($startY)) {
-            throw new InvalidArgumentException('$startY must be numeric');
+            throw new \InvalidArgumentException('$startY must be numeric');
         }
 
         if (!is_numeric($cropWidth)) {
-            throw new InvalidArgumentException('$cropWidth must be numeric');
+            throw new \InvalidArgumentException('$cropWidth must be numeric');
         }
 
         if (!is_numeric($cropHeight)) {
-            throw new InvalidArgumentException('$cropHeight must be numeric');
+            throw new \InvalidArgumentException('$cropHeight must be numeric');
         }
 
         // do some calculations
@@ -780,11 +767,11 @@ class GD extends PHPThumb
     public function rotateImageNDegrees($degrees)
     {
         if (!is_numeric($degrees)) {
-            throw new InvalidArgumentException('$degrees must be numeric');
+            throw new \InvalidArgumentException('$degrees must be numeric');
         }
 
         if (!function_exists('imagerotate')) {
-            throw new RuntimeException('Your version of GD does not support image rotation');
+            throw new \RuntimeException('Your version of GD does not support image rotation');
         }
 
         $this->workingImage = imagerotate($this->oldImage, $degrees, 0);
@@ -807,11 +794,11 @@ class GD extends PHPThumb
     public function imageFilter($filter, $arg1 = false, $arg2 = false, $arg3 = false, $arg4 = false)
     {
         if (!is_numeric($filter)) {
-            throw new InvalidArgumentException('$filter must be numeric');
+            throw new \InvalidArgumentException('$filter must be numeric');
         }
 
         if (!function_exists('imagefilter')) {
-            throw new RuntimeException('Your version of GD does not support image filters');
+            throw new \RuntimeException('Your version of GD does not support image filters');
         }
 
         $result = false;
@@ -828,7 +815,7 @@ class GD extends PHPThumb
         }
 
         if (!$result) {
-            throw new RuntimeException('GD imagefilter failed');
+            throw new \RuntimeException('GD imagefilter failed');
         }
 
         $this->workingImage = $this->oldImage;
@@ -851,13 +838,13 @@ class GD extends PHPThumb
         //Execute any plugins
         if ($this->plugins) {
             foreach ($this->plugins as $plugin) {
-                /* @var $plugin ThumbPluginInterface */
+                /* @var $plugin \PHPThumb\PluginInterface */
                 $plugin->execute($this);
             }
         }
 
         if (headers_sent() && php_sapi_name() != 'cli') {
-            throw new RuntimeException('Cannot show image, headers have already been sent');
+            throw new \RuntimeException('Cannot show image, headers have already been sent');
         }
 
         // When the interlace option equals true or false call imageinterlace else leave it to default
@@ -918,7 +905,7 @@ class GD extends PHPThumb
      *
      * If the target directory is not writeable, the function will try to correct the permissions (if allowed, this
      * is set as an option ($this->options['correctPermissions']).  If the target cannot be made writeable, then a
-     * RuntimeException is thrown.
+     * \RuntimeException is thrown.
      *
      * @param  string       $fileName The full path and filename of the image to save
      * @param  string       $format   The format to save the image in (optional, must be one of [GIF,JPG,PNG]
@@ -930,7 +917,7 @@ class GD extends PHPThumb
         $format = ($format !== null) ? strtoupper($format) : $this->format;
 
         if (!in_array($format, $validFormats)) {
-            throw new InvalidArgumentException("Invalid format type specified in save function: {$format}");
+            throw new \InvalidArgumentException("Invalid format type specified in save function: {$format}");
         }
 
         // make sure the directory is writeable
@@ -941,10 +928,10 @@ class GD extends PHPThumb
 
                 // throw an exception if not writeable
                 if (!is_writeable(dirname($fileName))) {
-                    throw new RuntimeException("File is not writeable, and could not correct permissions: {$fileName}");
+                    throw new \RuntimeException("File is not writeable, and could not correct permissions: {$fileName}");
                 }
             } else { // throw an exception if not writeable
-                throw new RuntimeException("File not writeable: {$fileName}");
+                throw new \RuntimeException("File not writeable: {$fileName}");
             }
         }
 
@@ -975,22 +962,12 @@ class GD extends PHPThumb
     #################################
 
     /**
-     * Sets $this->options to $options
-     *
+     * Sets options for all operations.
      * @param array $options
+     * @return GD
      */
     public function setOptions(array $options = array())
     {
-        // make sure we've got an array for $this->options (could be null)
-        if (!is_array($this->options)) {
-            $this->options = array();
-        }
-
-        // make sure we've gotten a proper argument
-        if (!is_array($options)) {
-            throw new InvalidArgumentException('setOptions requires an array');
-        }
-
         // we've yet to init the default options, so create them here
         if (sizeof($this->options) == 0) {
             $defaultOptions = array(
@@ -1023,10 +1000,8 @@ class GD extends PHPThumb
     }
 
     /**
-     * Sets $currentDimensions.
-     *
-     * @param object $currentDimensions
-     * @see \PHPThumb\GD::$currentDimensions
+     * @param $currentDimensions
+     * @return GD
      */
     public function setCurrentDimensions($currentDimensions)
     {
@@ -1036,9 +1011,7 @@ class GD extends PHPThumb
     }
 
     /**
-     * Returns $maxHeight.
-     *
-     * @see \PHPThumb\GD::$maxHeight
+     * @return int
      */
     public function getMaxHeight()
     {
@@ -1046,10 +1019,8 @@ class GD extends PHPThumb
     }
 
     /**
-     * Sets $maxHeight.
-     *
-     * @param object $maxHeight
-     * @see \PHPThumb\GD::$maxHeight
+     * @param $maxHeight
+     * @return GD
      */
     public function setMaxHeight($maxHeight)
     {
@@ -1059,9 +1030,7 @@ class GD extends PHPThumb
     }
 
     /**
-     * Returns $maxWidth.
-     *
-     * @see \PHPThumb\GD::$maxWidth
+     * @return int
      */
     public function getMaxWidth()
     {
@@ -1069,10 +1038,8 @@ class GD extends PHPThumb
     }
 
     /**
-     * Sets $maxWidth.
-     *
-     * @param object $maxWidth
-     * @see \PHPThumb\GD::$maxWidth
+     * @param $maxWidth
+     * @return GD
      */
     public function setMaxWidth($maxWidth)
     {
@@ -1349,9 +1316,6 @@ class GD extends PHPThumb
             } else {
                 throw new \Exception("File is not a valid image: {$this->fileName}");
             }
-
-            // make sure we really stop execution
-            return;
         }
 
         $mimeType = isset($formatInfo['mime']) ? $formatInfo['mime'] : null;
