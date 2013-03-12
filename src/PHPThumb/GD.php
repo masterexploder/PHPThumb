@@ -872,7 +872,7 @@ class GD extends PHPThumb
                 if ($rawData === false) {
                     header('Content-type: image/png');
                 }
-                imagepng($this->oldImage);
+                imagepng($this->oldImage, null, $this->options['pngQuality']);
                 break;
         }
 
@@ -950,7 +950,7 @@ class GD extends PHPThumb
                 imagejpeg($this->oldImage, $fileName, $this->options['jpegQuality']);
                 break;
             case 'PNG':
-                imagepng($this->oldImage, $fileName);
+                imagepng($this->oldImage, $fileName, $this->options['pngQuality']);
                 break;
         }
 
@@ -978,7 +978,8 @@ class GD extends PHPThumb
                 'alphaMaskColor'        => array (255, 255, 255),
                 'preserveTransparency'  => true,
                 'transparencyMaskColor' => array (0, 0, 0),
-                'interlace'             => null
+                'interlace'             => null,
+                'pngQuality'            => 4
             );
         } else { // otherwise, let's use what we've got already
             $defaultOptions = $this->options;
