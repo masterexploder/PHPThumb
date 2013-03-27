@@ -84,7 +84,7 @@ abstract class PHPThumb
      */
     protected function validateRequestedResource($filename)
     {
-        if(true === filter_var($filename, FILTER_VALIDATE_URL)) {
+        if(false !== filter_var($filename, FILTER_VALIDATE_URL)) {
             $this->remoteImage = true;
             return true;
         }
