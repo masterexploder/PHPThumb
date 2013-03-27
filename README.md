@@ -1,5 +1,11 @@
 # PHP Thumb
 
+*Notice!!*
+This project will soon be at version 2.0! Their will be major API changes and backward-compatability breaks. At this time we are no longer accepting pull requests for the 1.0 branch. [Go to the 2.0 Branch](https://github.com/masterexploder/PHPThumb/tree/2.0).
+
+Also note - the 2.0 branch is not yet stable. Feel free to test, but I would recommend against using it in production, as the API may still change.
+
+
 PHP Thumb is a light-weight image manipulation library 
 aimed at thumbnail generation. It features the ability to 
 resize by width, height, and percentage, create custom crops, 
