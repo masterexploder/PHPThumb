@@ -2,16 +2,10 @@
 
 # PHP Thumb
 
-## NOTICE - from Jarrod Nettles (the forker)
-I've made some very radical changes to this library in getting it ready for PHP 5.3. My goals are to get it into a
-PSR-0 compliant state and into packagist as such so that it can be easily used in any project. If you intend to use my 
-code, bear in mind that most of the documentation is no longer relevant. Instead, look at the examples folder in the project
-as I've updated each of them to reflect the new API.
-
-The API is still in flux, as I haven't exactly pinned down where I'd like to take some parts so take anything you
-see with a grain of salt. 
-
-
+## NOTICE -
+This project was recently updated to 2.0 and is PSR-0 compliant and supports Composer integration. Some parts of the documentation
+are incorrect as they haven't been updated for the new version. Your 1.0 code is not compatible with 2.0! Please review the updated
+examples for how to use the new version.
 
 PHP Thumb is a light-weight image manipulation library 
 aimed at thumbnail generation. It features the ability to 
@@ -22,8 +16,7 @@ It also features the ability to perform multiple manipulations per
 instance (also known as chaining), without the need to save and 
 re-initialize the class with every manipulation.
 
-More information and documentation is available at the project's 
-homepage: [http://phpthumb.gxdlabs.com](http://phpthumb.gxdlabs.com)
+More information and documentation is available at the project's wiki: [https://github.com/masterexploder/PHPThumb/wiki](https://github.com/masterexploder/PHPThumb/wiki)
 
 ## Documentation / Help
 
