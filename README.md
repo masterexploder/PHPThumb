@@ -1,9 +1,16 @@
+[![Build Status](https://secure.travis-ci.org/masterexploder/PHPThumb.png?branch=master)](http://travis-ci.org/masterexploder/PHPThumb)
+
 # PHP Thumb
 
-*Notice!!*
-This project will soon be at version 2.0! Their will be major API changes and backward-compatability breaks. At this time we are no longer accepting pull requests for the 1.0 branch. [Go to the 2.0 Branch](https://github.com/masterexploder/PHPThumb/tree/2.0).
+## NOTICE - from Jarrod Nettles (the forker)
+I've made some very radical changes to this library in getting it ready for PHP 5.3. My goals are to get it into a
+PSR-0 compliant state and into packagist as such so that it can be easily used in any project. If you intend to use my 
+code, bear in mind that most of the documentation is no longer relevant. Instead, look at the examples folder in the project
+as I've updated each of them to reflect the new API.
 
-Also note - the 2.0 branch is not yet stable. Feel free to test, but I would recommend against using it in production, as the API may still change.
+The API is still in flux, as I haven't exactly pinned down where I'd like to take some parts so take anything you
+see with a grain of salt. 
+
 
 
 PHP Thumb is a light-weight image manipulation library 
@@ -23,21 +30,9 @@ homepage: [http://phpthumb.gxdlabs.com](http://phpthumb.gxdlabs.com)
 I've tried to thoroughly document things as best I can, but here's a list of places to 
 find documentation / help:
 
-- [Documentation](https://github.com/masterexploder/PHPThumb/wiki) - Your best friend, the library docs
+- [Documentation](http://wiki.github.com/iselby/PHPThumb/) - Your best friend, the library docs
 - [Forums](http://phpthumb.gxdlabs.com/forums) - Got questions, comments, or feedback? This is the place to visit
 - [Developer Docs](http://phpthumb.gxdlabs.com/apidocs) - Auto-generated docs for developers… these cover the code itself
-
-## Developing
-
-While I know it's somewhat discriminatory in the PHP world since many of
-you are still on windows (thus making working with ruby a bit more difficult), 
-I've created a rakefile that takes care of common tasks (such as generating docs, 
-building release tarballs, etc.)  This probably isn't relevant to anything you 
-would be doing unless you want to fork this project and release your version of it.
-
-On that note, if you'd like to contribute to the project, you can either fork it and
-submit back to me, or you can ask to be a contributor.  Reach out to me if you're 
-interested, I'm happy to chat :)
 
 ## License
 
