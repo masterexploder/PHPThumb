@@ -771,7 +771,7 @@ class GD extends PHPThumb
         }
 
         if (!function_exists('imagerotate')) {
-            throw new \\RuntimeException('Your version of GD does not support image rotation');
+            throw new \RuntimeException('Your version of GD does not support image rotation');
         }
 
         $this->workingImage = imagerotate($this->oldImage, $degrees, 0);
@@ -798,7 +798,7 @@ class GD extends PHPThumb
         }
 
         if (!function_exists('imagefilter')) {
-            throw new \\RuntimeException('Your version of GD does not support image filters');
+            throw new \RuntimeException('Your version of GD does not support image filters');
         }
 
         $result = false;
@@ -815,7 +815,7 @@ class GD extends PHPThumb
         }
 
         if (!$result) {
-            throw new \\RuntimeException('GD imagefilter failed');
+            throw new \RuntimeException('GD imagefilter failed');
         }
 
         $this->workingImage = $this->oldImage;
@@ -844,7 +844,7 @@ class GD extends PHPThumb
         }
 
         if (headers_sent() && php_sapi_name() != 'cli') {
-            throw new \\RuntimeException('Cannot show image, headers have already been sent');
+            throw new \RuntimeException('Cannot show image, headers have already been sent');
         }
 
         // When the interlace option equals true or false call imageinterlace else leave it to default
@@ -905,7 +905,7 @@ class GD extends PHPThumb
      *
      * If the target directory is not writeable, the function will try to correct the permissions (if allowed, this
      * is set as an option ($this->options['correctPermissions']).  If the target cannot be made writeable, then a
-     * \\RuntimeException is thrown.
+     * \RuntimeException is thrown.
      *
      * @param  string       $fileName The full path and filename of the image to save
      * @param  string       $format   The format to save the image in (optional, must be one of [GIF,JPG,PNG]
@@ -928,10 +928,10 @@ class GD extends PHPThumb
 
                 // throw an exception if not writeable
                 if (!is_writeable(dirname($fileName))) {
-                    throw new \\RuntimeException("File is not writeable, and could not correct permissions: {$fileName}");
+                    throw new \RuntimeException("File is not writeable, and could not correct permissions: {$fileName}");
                 }
             } else { // throw an exception if not writeable
-                throw new \\RuntimeException("File not writeable: {$fileName}");
+                throw new \RuntimeException("File not writeable: {$fileName}");
             }
         }
 
