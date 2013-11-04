@@ -935,6 +935,14 @@ class GD extends PHPThumb
             }
         }
 
+        //Execute any plugins
+        if ($this->plugins) {
+            foreach ($this->plugins as $plugin) {
+                /* @var $plugin \PHPThumb\PluginInterface */
+                $plugin->execute($this);
+            }
+        }
+
         // When the interlace option equals true or false call imageinterlace else leave it to default
         if ($this->options['interlace'] === true) {
             imageinterlace($this->oldImage, 1);
