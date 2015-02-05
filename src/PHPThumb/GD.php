@@ -1380,6 +1380,25 @@ class GD extends PHPThumb
      */
     protected function preserveAlpha()
     {
+        
+        // preserve alpha transparency in png loaded as string
+		if ( $this->format == 'STRING' && $this->options['preserveAlpha']===true)
+		{
+			imagealphablending($this->workingImage, true);
+			
+			$colorTransparent = imagecolorallocatealpha
+			(
+				$this->workingImage, 
+				$this->options['alphaMaskColor'][0], 
+				$this->options['alphaMaskColor'][1], 
+				$this->options['alphaMaskColor'][2], 
+				0
+			);
+			
+			imagefill($this->workingImage, 0, 0, $colorTransparent);
+			imagesavealpha($this->workingImage, true);
+		}
+        
         if ($this->format == 'PNG' && $this->options['preserveAlpha'] === true) {
             imagealphablending($this->workingImage, false);
 
