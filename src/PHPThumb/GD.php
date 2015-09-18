@@ -191,7 +191,7 @@ class GD extends PHPThumb
      *
      * @param  int          $maxWidth  The maximum width of the image in pixels
      * @param  int          $maxHeight The maximum height of the image in pixels
-     * @param  bool         $calcImageSizeStrict
+     * @param  bool         $calcImageSizeStrict Used internally when this function is called by adaptiveResize().
      * @return \PHPThumb\GD
      */
     public function resize($maxWidth = 0, $maxHeight = 0, $calcImageSizeStrict = true)
@@ -292,7 +292,7 @@ class GD extends PHPThumb
         $this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
 
         // resize the image to be close to our desired dimensions
-        $this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
+        $this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight'], true);
 
         // reset the max dimensions...
         if ($this->options['resizeUp'] === false) {
