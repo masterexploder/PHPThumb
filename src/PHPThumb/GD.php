@@ -80,6 +80,20 @@ class GD extends PHPThumb
     protected $percent;
 
     /**
+     * The various EXIF orientation values
+     *
+     * @var int
+     */
+    const EXIF_ORIENTATION_TOP_LEFT = 1;
+    const EXIF_ORIENTATION_TOP_RIGHT = 2;
+    const EXIF_ORIENTATION_BOTTOM_RIGHT = 3;
+    const EXIF_ORIENTATION_BOTTOM_LEFT = 4;
+    const EXIF_ORIENTATION_LEFT_TOP = 5;
+    const EXIF_ORIENTATION_RIGHT_TOP = 6;
+    const EXIF_ORIENTATION_RIGHT_BOTTOM = 7;
+    const EXIF_ORIENTATION_LEFT_BOTTOM = 8;
+
+    /**
      * @param string $fileName
      * @param array $options
      * @param array $plugins
@@ -104,6 +118,33 @@ class GD extends PHPThumb
             case 'STRING':
                 $this->oldImage = imagecreatefromstring($this->fileName);
                 break;
+        }
+
+        //  Handle EXIF rotation
+        $exif        = exif_read_data($this->fileName);
+        $orientation = array_key_exists('Orientation', $exif) ? $exif['Orientation'] : null;
+        switch ($orientation) {
+            case static::EXIF_ORIENTATION_BOTTOM_RIGHT:
+                $rotate = 180;
+                break;
+            case static::EXIF_ORIENTATION_RIGHT_TOP:
+                $rotate = -90;
+                break;
+            case static::EXIF_ORIENTATION_LEFT_BOTTOM:
+                $rotate = 90;
+                break;
+            case static::EXIF_ORIENTATION_TOP_LEFT:
+            case static::EXIF_ORIENTATION_TOP_RIGHT:
+            case static::EXIF_ORIENTATION_BOTTOM_LEFT:
+            case static::EXIF_ORIENTATION_LEFT_TOP:
+            case static::EXIF_ORIENTATION_RIGHT_BOTTOM:
+            default:
+                $rotate = 0;
+                break;
+        }
+
+        if ($rotate !== 0) {
+            $this->oldImage = imagerotate($this->oldImage, $rotate, 0);
         }
 
         $this->currentDimensions = array (
@@ -191,10 +232,9 @@ class GD extends PHPThumb
      *
      * @param  int          $maxWidth  The maximum width of the image in pixels
      * @param  int          $maxHeight The maximum height of the image in pixels
-     * @param  bool         $calcImageSizeStrict Used internally when this function is called by adaptiveResize().
      * @return \PHPThumb\GD
      */
-    public function resize($maxWidth = 0, $maxHeight = 0, $calcImageSizeStrict = true)
+    public function resize($maxWidth = 0, $maxHeight = 0)
     {
         // make sure our arguments are valid
         if (!is_numeric($maxWidth)) {
@@ -215,14 +255,7 @@ class GD extends PHPThumb
         }
 
         // get the new dimensions...
-        if ($calcImageSizeStrict === true) {
-
-            $this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
-
-        } else {
-
-            $this->calcImageSize($this->currentDimensions['width'], $this->currentDimensions['height']);
-        }
+        $this->calcImageSize($this->currentDimensions['width'], $this->currentDimensions['height']);
 
         // create the working image
         if (function_exists('imagecreatetruecolor')) {
@@ -292,7 +325,7 @@ class GD extends PHPThumb
         $this->calcImageSizeStrict($this->currentDimensions['width'], $this->currentDimensions['height']);
 
         // resize the image to be close to our desired dimensions
-        $this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight'], true);
+        $this->resize($this->newDimensions['newWidth'], $this->newDimensions['newHeight']);
 
         // reset the max dimensions...
         if ($this->options['resizeUp'] === false) {
