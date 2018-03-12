@@ -121,8 +121,14 @@ class GD extends PHPThumb
         }
 
         //  Handle EXIF rotation
-        $exif        = exif_read_data($this->fileName);
-        $orientation = array_key_exists('Orientation', $exif) ? $exif['Orientation'] : null;
+        $imageType = exif_imagetype($this->fileName);
+        if (in_array($imageType, array (IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM))) {
+            $exif        = exif_read_data($this->fileName);
+            $orientation = array_key_exists('Orientation', $exif) ? $exif['Orientation'] : null;
+        } else {
+            $orientation = null;
+        }
+
         switch ($orientation) {
             case static::EXIF_ORIENTATION_BOTTOM_RIGHT:
                 $rotate = 180;
