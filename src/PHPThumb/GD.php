@@ -1016,7 +1016,7 @@ class GD extends PHPThumb
     public function setOptions(array $options = array())
     {
         // we've yet to init the default options, so create them here
-        if (sizeof($this->options) == 0) {
+        if (empty($this->options)) {
             $defaultOptions = array(
                 'resizeUp'              => false,
                 'jpegQuality'           => 100,
