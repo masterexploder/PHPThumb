@@ -130,7 +130,7 @@ class GD extends PHPThumb
      * @param array $color
      * @return GD
      */
-    public function pad($width, $height, $color = array(255, 255, 255))
+    public function pad($width, $height, $color = array(255, 255, 255, 127))
     {
         // no resize - woohoo!
         if ($width == $this->currentDimensions['width'] && $height == $this->currentDimensions['height']) {
@@ -144,12 +144,16 @@ class GD extends PHPThumb
             $this->workingImage = imagecreate($width, $height);
         }
 
+        imagealphablending($this->workingImage, false);
+        imagesavealpha($this->workingImage, true);
+
         // create the fill color
-        $fillColor = imagecolorallocate(
+        $fillColor = imagecolorallocatealpha(
             $this->workingImage,
             $color[0],
             $color[1],
-            $color[2]
+            $color[2],
+            $color[3]
         );
 
         // fill our working image with the fill color
