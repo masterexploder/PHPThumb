@@ -762,9 +762,10 @@ class GD extends PHPThumb
      * Rotates image specified number of degrees
      *
      * @param  int          $degrees
+     * @param  array        $fillColor
      * @return \PHPThumb\GD
      */
-    public function rotateImageNDegrees($degrees)
+    public function rotateImageNDegrees($degrees, $fillColor = array(0, 0, 0))
     {
         if (!is_numeric($degrees)) {
             throw new \InvalidArgumentException('$degrees must be numeric');
@@ -774,13 +775,20 @@ class GD extends PHPThumb
             throw new \RuntimeException('Your version of GD does not support image rotation');
         }
 
-        $this->workingImage = imagerotate($this->oldImage, $degrees, 0);
+        $this->workingImage = imagerotate(
+            $this->oldImage,
+            $degrees,
+            imagecolorallocate(
+                $this->oldImage,
+                $fillColor[0],
+                $fillColor[1],
+                $fillColor[2]
+            )
+        );
 
-        $newWidth                          = $this->currentDimensions['height'];
-        $newHeight                         = $this->currentDimensions['width'];
         $this->oldImage                    = $this->workingImage;
-        $this->currentDimensions['width']  = $newWidth;
-        $this->currentDimensions['height'] = $newHeight;
+        $this->currentDimensions['width']  = imagesx($this->workingImage);
+        $this->currentDimensions['height'] = imagesy($this->workingImage);
 
         return $this;
     }
