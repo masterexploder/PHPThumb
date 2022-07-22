@@ -106,7 +106,7 @@ class GD extends PHPThumb
                 break;
         }
 
-        $this->currentDimensions = array (
+        $this->currentDimensions = array(
             'width'  => imagesx($this->oldImage),
             'height' => imagesy($this->oldImage)
         );
@@ -427,7 +427,6 @@ class GD extends PHPThumb
             // Image is landscape
             $maxCropX = $this->currentDimensions['width'] - $this->maxWidth;
             $cropX    = intval(($percent / 100) * $maxCropX);
-
         } elseif ($this->currentDimensions['height'] > $this->maxHeight) {
             // Image is portrait
             $maxCropY = $this->currentDimensions['height'] - $this->maxHeight;
@@ -594,7 +593,7 @@ class GD extends PHPThumb
     public function resizePercent($percent = 0)
     {
         if (!is_numeric($percent)) {
-            throw new \InvalidArgumentException ('$percent must be numeric');
+            throw new \InvalidArgumentException('$percent must be numeric');
         }
 
         $this->percent = intval($percent);
@@ -745,7 +744,7 @@ class GD extends PHPThumb
      * Rotates image either 90 degrees clockwise or counter-clockwise
      *
      * @param string $direction
-     * @retunrn \PHPThumb\GD
+     * @return \PHPThumb\GD
      */
     public function rotateImage($direction = 'CW')
     {
@@ -975,9 +974,9 @@ class GD extends PHPThumb
                 'jpegQuality'           => 100,
                 'correctPermissions'    => false,
                 'preserveAlpha'         => true,
-                'alphaMaskColor'        => array (255, 255, 255),
+                'alphaMaskColor'        => array(255, 255, 255),
                 'preserveTransparency'  => true,
-                'transparencyMaskColor' => array (0, 0, 0),
+                'transparencyMaskColor' => array(0, 0, 0),
                 'interlace'             => null
             );
         } else { // otherwise, let's use what we've got already
